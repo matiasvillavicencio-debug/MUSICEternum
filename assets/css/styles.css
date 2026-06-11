@@ -438,3 +438,13 @@ body {
     .payment-method-box { font-size: 13px; padding: 10px; flex-direction: column; text-align: center; gap: 10px; }
     .qr-img { width: 200px; height: 200px; }
 }
+
+.hero-section { min-height: 100vh; display: flex; align-items: center; justify-content: space-between; padding: 100px 50px 50px; max-width: 1200px; margin: 0 auto; gap: 50px; }
+
+.section-scroll { scroll-margin-top: 120px; }
+
+.mb-50 { margin-bottom: 50px; }
+
+.event-card h3 { font-family: 'Oswald', sans-serif; font-size: 22px; margin-bottom: 5px; color: var(--azul-profundo); }
+
+.container-box h3 { font-family: 'Oswald', sans-serif; font-size: 22px; color: var(--azul-profundo); margin-bottom: 10px; }

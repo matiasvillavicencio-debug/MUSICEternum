@@ -2,9 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -19,7 +17,10 @@ if (session_status() === PHP_SESSION_NONE) {
     <nav class="navbar">
         <div class="nav-brand"><a href="/MUSICEternum/index.php">Eternum <span>MUSIC</span></a></div>
         <div class="nav-links">
-            <a href="/MUSICEternum/index.php">Explorar</a>
+            <a href="/MUSICEternum/index.php">Inicio</a>
+            <a href="/MUSICEternum/views/novedades.php">Novedades</a>
+            <a href="/MUSICEternum/views/cartelera.php">Comprar Entradas</a>
+            <a href="/MUSICEternum/views/nosotros.php">Nosotros</a>
             
             <?php if (isset($_SESSION['usuario_id'])): ?>
                 
