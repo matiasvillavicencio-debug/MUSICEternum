@@ -15,8 +15,11 @@ require_once '../includes/header.php';
 
 <section class="container-box-lg">
     <div class="flex-between mt-30 mb-20">
-        <h2 class="title-lg" style="margin:0;">Control de Servidor</h2>
-        <button class="btn-confirm-bright-green" onclick="window.location.href='/MUSICEternum/views/crear_evento.php'">+ Añadir Evento Manual</button>
+        <h2 class="title-lg mb-0">Control de Servidor</h2>
+        <div class="flex-gap-15">
+            <button class="btn-confirm-bright-green" onclick="window.location.href='crear_evento.php'">+ Añadir Evento</button>
+            <button class="btn-action-orange" onclick="window.location.href='crear_clase.php'">+ Añadir Clase</button>
+        </div>
     </div>
     
     <div class="flex-container-50-50 bg-transparent">
