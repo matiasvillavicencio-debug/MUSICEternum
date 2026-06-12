@@ -53,17 +53,20 @@ require_once '../includes/header.php';
                             <span class="badge badge-nivel"><i class="fa-solid fa-signal"></i> <?= htmlspecialchars($clase['nivel']) ?></span>
                         </div>
                         
-                        <p class="temario-title"><i class="fa-solid fa-list-check"></i> Temario Oficial:</p>
-                        <p class="temario-text"><?= htmlspecialchars($clase['descripcion']) ?></p>
+                        <p class="temario-title"><i class="fa-solid fa-list-check"></i> Resumen de la clase:</p>
+                        <p class="temario-text event-desc"><?= htmlspecialchars($clase['descripcion']) ?></p>
                         
-                        <div class="profesor-precio">
-                            $<?= number_format($clase['precio'], 2) ?>
-                        </div>
-                        
-                        <div class="card-actions">
-                            <a href="saber_mas_clase.php?id=<?= $clase['id'] ?>" class="btn-outline">Saber Más</a>
-                            <a href="contacto_profesor.php?id_clase=<?= $clase['id'] ?>&id_profesor=<?= $clase['id_profesor'] ?>" class="btn-outline">Contacto</a>
-                            <a href="comprar_curso.php?id=<?= $clase['id'] ?>" class="btn-primary-action btn-action-full">Inscribirse <i class="fa-solid fa-arrow-right"></i></a>
+                        <div class="card-actions mt-15">
+                            <button type="button" class="btn-outline w-100 btn-open-preview" 
+                                data-id="<?= $clase['id'] ?>"
+                                data-titulo="<?= htmlspecialchars($clase['titulo']) ?>"
+                                data-profe="<?= htmlspecialchars($clase['profesor_nombre']) ?>"
+                                data-precio="<?= number_format($clase['precio'], 2) ?>"
+                                data-mod="<?= htmlspecialchars($clase['modalidad']) ?>"
+                                data-niv="<?= htmlspecialchars($clase['nivel']) ?>"
+                                data-desc="<?= htmlspecialchars($clase['descripcion']) ?>">
+                                <i class="fa-solid fa-eye"></i> Vista Previa
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -71,5 +74,58 @@ require_once '../includes/header.php';
         </div>
     </div>
 </section>
+
+<div class="modal-preview" id="modalPreview">
+    <div class="preview-box">
+        <button class="btn-close-modal" id="btnClosePreview"><i class="fa-solid fa-xmark"></i></button>
+        <div class="preview-header">
+            <h3 id="prevTitulo"></h3>
+            <p id="prevProfe"></p>
+        </div>
+        <div class="preview-body">
+            <div class="badges-container justify-center">
+                <span class="badge badge-modalidad" id="prevMod"></span>
+                <span class="badge badge-nivel" id="prevNiv"></span>
+            </div>
+            <p class="text-muted mt-15" id="prevDesc"></p>
+            <div class="preview-price" id="prevPrecio"></div>
+            
+            <a href="#" id="prevLink" class="btn-primary-action w-100">Ver toda la información <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const btnsPreview = document.querySelectorAll('.btn-open-preview');
+    const modalPreview = document.getElementById('modalPreview');
+    const btnClosePreview = document.getElementById('btnClosePreview');
+
+    btnsPreview.forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('prevTitulo').textContent = this.getAttribute('data-titulo');
+            document.getElementById('prevProfe').textContent = "Prof. " + this.getAttribute('data-profe');
+            document.getElementById('prevMod').innerHTML = "<i class='fa-solid fa-laptop'></i> " + this.getAttribute('data-mod');
+            document.getElementById('prevNiv').innerHTML = "<i class='fa-solid fa-signal'></i> " + this.getAttribute('data-niv');
+            document.getElementById('prevPrecio').textContent = "$" + this.getAttribute('data-precio');
+            
+            let desc = this.getAttribute('data-desc');
+            document.getElementById('prevDesc').textContent = desc.length > 150 ? desc.substring(0, 150) + "..." : desc;
+            
+            document.getElementById('prevLink').href = "saber_mas_clase.php?id=" + this.getAttribute('data-id');
+            
+            modalPreview.classList.add('active');
+        });
+    });
+
+    btnClosePreview.addEventListener('click', () => {
+        modalPreview.classList.remove('active');
+    });
+
+    modalPreview.addEventListener('click', (e) => {
+        if (e.target === modalPreview) {
+            modalPreview.classList.remove('active');
+        }
+    });
+</script>
 
 <?php require_once '../includes/footer.php'; ?>
