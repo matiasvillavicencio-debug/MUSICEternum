@@ -439,7 +439,28 @@ body {
     .qr-img { width: 200px; height: 200px; }
 }
 
-.hero-section { min-height: 100vh; display: flex; align-items: center; justify-content: space-between; padding: 100px 50px 50px; max-width: 1200px; margin: 0 auto; gap: 50px; }
+.hero-section {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.hero-content {
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-desc {
+    margin: 0 auto 30px auto;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--blanco-rosaceo);
+}
 
 .section-scroll { scroll-margin-top: 120px; }
 
