@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="auth-wrapper">
         <div class="auth-panel">
             <div class="glass-card">
-                <h2 class="title-lg text-center">¡Únete!<br>Crea tu cuenta</h2>
+                <h2 class="title-lg text-center">¡Unite!<br>Crea tu cuenta</h2>
                 <form method="POST" action="">
                     <input type="text" name="username" class="glass-input" placeholder="Nombre de Usuario / Banda" required>
                     <input type="email" name="email" class="glass-input" placeholder="Correo Electrónico" required>
@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                     <div class="auth-links">
                         <a href="../index.php"><i class="fa-solid fa-arrow-left"></i> Volver</a>
-                        <a href="login.php">¿Ya tienes cuenta? Ingresa</a>
+                        <a href="login.php">¿Ya tienes una cuenta? Ingresar</a>
                     </div>
                 </form>
             </div>
