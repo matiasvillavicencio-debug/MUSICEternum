@@ -10,6 +10,9 @@ if (!isset($_SESSION['usuario_id'])) {
 $id_usuario = $_SESSION['usuario_id'];
 $rol = $_SESSION['role'];
 
+$mis_clases = [];
+$total_alumnos = 0;
+
 if (isset($_GET['eliminar_clase']) && $rol === 'profesor') {
     $id_clase = $_GET['eliminar_clase'];
     $stmt = $pdo->prepare("DELETE FROM clases WHERE id = ? AND id_profesor = ?");
