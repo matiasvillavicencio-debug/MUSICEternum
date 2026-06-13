@@ -1,53 +1,157 @@
 <?php
 session_start();
 require_once '../includes/db.php';
+
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");
     exit();
 }
 
-$stmt = $pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
-$stmt->execute([$_SESSION['usuario_id']]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$id_usuario = $_SESSION['usuario_id'];
+$rol = $_SESSION['role'];
+$mensaje = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    
-    $sql = "UPDATE usuarios SET username = ?, email = ? WHERE id = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$username, $email, $_SESSION['usuario_id']]);
-    
-    $_SESSION['username'] = $username;
-    header("Location: ajustes.php?success=1");
-    exit();
+    if (isset($_POST['actualizar_datos'])) {
+        $username = trim($_POST['username']);
+        $email = trim($_POST['email']);
+        
+        $stmt = $pdo->prepare("UPDATE usuarios SET username = ?, email = ? WHERE id = ?");
+        if ($stmt->execute([$username, $email, $id_usuario])) {
+            $_SESSION['username'] = $username;
+            $mensaje = "Datos personales actualizados correctamente.";
+        }
+    } elseif (isset($_POST['subir_avatar']) && isset($_FILES['avatar_file']) && $_FILES['avatar_file']['error'] === UPLOAD_ERR_OK) {
+        $directorio = '../uploads/avatars/';
+        if (!is_dir($directorio)) {
+            mkdir($directorio, 0777, true);
+        }
+        
+        $nombre_archivo = time() . '_' . basename($_FILES['avatar_file']['name']);
+        $ruta_destino = $directorio . $nombre_archivo;
+        $tipo_archivo = strtolower(pathinfo($ruta_destino, PATHINFO_EXTENSION));
+        
+        if (in_array($tipo_archivo, ['jpg', 'jpeg', 'png'])) {
+            $stmtOld = $pdo->prepare("SELECT avatar FROM usuarios WHERE id = ?");
+            $stmtOld->execute([$id_usuario]);
+            $oldAvatar = $stmtOld->fetchColumn();
+            
+            if (move_uploaded_file($_FILES['avatar_file']['tmp_name'], $ruta_destino)) {
+                $stmt = $pdo->prepare("UPDATE usuarios SET avatar = ? WHERE id = ?");
+                $stmt->execute([$nombre_archivo, $id_usuario]);
+                $mensaje = "Foto de perfil actualizada con éxito.";
+                
+                if ($oldAvatar && file_exists($directorio . $oldAvatar)) {
+                    unlink($directorio . $oldAvatar);
+                }
+            }
+        } else {
+            $mensaje = "Formato no válido. Utiliza únicamente JPG o PNG.";
+        }
+    } elseif (isset($_POST['eliminar_avatar'])) {
+        $directorio = '../uploads/avatars/';
+        $stmtOld = $pdo->prepare("SELECT avatar FROM usuarios WHERE id = ?");
+        $stmtOld->execute([$id_usuario]);
+        $oldAvatar = $stmtOld->fetchColumn();
+        
+        if ($oldAvatar) {
+            $stmt = $pdo->prepare("UPDATE usuarios SET avatar = NULL WHERE id = ?");
+            $stmt->execute([$id_usuario]);
+            $mensaje = "Foto de perfil eliminada. Se ha restaurado tu avatar por defecto.";
+            
+            if (file_exists($directorio . $oldAvatar)) {
+                unlink($directorio . $oldAvatar);
+            }
+        }
+    }
 }
+
+$stmtUser = $pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
+$stmtUser->execute([$id_usuario]);
+$usuarioData = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+$avatar_actual = $usuarioData['avatar'] ? '/MUSICEternum/uploads/avatars/' . $usuarioData['avatar'] : "https://ui-avatars.com/api/?name=" . urlencode($_SESSION['username']) . "&background=00B4D8&color=fff&bold=true";
+
 require_once '../includes/header.php';
 ?>
-<section class="container-box mx-auto max-w-600 mt-30">
-    <div class="flex-between mb-20">
-        <h2 class="title-md"><i class="fa-solid fa-gear text-danger"></i> Ajustes de Cuenta</h2>
-        <a href="dashboard.php" class="text-muted"><i class="fa-solid fa-arrow-left"></i> Volver</a>
-    </div>
-    
-    <?php if(isset($_GET['success'])): ?>
-        <p class="text-success text-center mb-20">Tus datos personales han sido actualizados con éxito.</p>
-    <?php endif; ?>
 
-    <form method="POST" action="">
-        <div class="form-group mb-20">
-            <label>Nombre de Usuario Público</label>
-            <input type="text" name="username" class="input-light" value="<?= htmlspecialchars($user['username']) ?>" required>
+<div class="dash-wrapper">
+    <aside class="dash-sidebar">
+        <div class="dash-sidebar-user text-center">
+            <img src="<?= htmlspecialchars($avatar_actual) ?>" alt="Avatar" class="avatar-md mb-10">
+            <h3 class="title-md text-blanco"><?= htmlspecialchars($_SESSION['username']) ?></h3>
+            <p class="text-celeste-sm"><?= strtoupper($rol) ?></p>
         </div>
-        <div class="form-group mb-20">
-            <label>Correo Electrónico de Contacto</label>
-            <input type="email" name="email" class="input-light" value="<?= htmlspecialchars($user['email']) ?>" required>
+        
+        <nav class="dash-nav">
+            <a href="dashboard.php" class="dash-nav-item"><i class="fa-solid fa-table-columns"></i> Panel Principal</a>
+            
+            <?php if ($rol === 'profesor'): ?>
+                <a href="crear_clase.php" class="dash-nav-item text-success-bold"><i class="fa-solid fa-plus"></i> Crear Nueva Clase</a>
+                <a href="mis_alumnos.php" class="dash-nav-item"><i class="fa-solid fa-users"></i> Mis Alumnos</a>
+                <a href="subir_material.php" class="dash-nav-item"><i class="fa-solid fa-file-arrow-up"></i> Subir Material</a>
+            <?php elseif ($rol === 'alumno'): ?>
+                <a href="mis_cursos.php" class="dash-nav-item"><i class="fa-solid fa-book"></i> Mis Cursos</a>
+                <a href="calificaciones.php" class="dash-nav-item"><i class="fa-solid fa-star"></i> Calificaciones</a>
+                <a href="material_estudio.php" class="dash-nav-item"><i class="fa-solid fa-folder-open"></i> Material de Estudio</a>
+            <?php elseif ($rol === 'espectador'): ?>
+                <a href="mis_entradas.php" class="dash-nav-item"><i class="fa-solid fa-ticket"></i> Mis Entradas</a>
+            <?php endif; ?>
+            
+            <a href="ajustes.php" class="dash-nav-item active"><i class="fa-solid fa-gear"></i> Configuración</a>
+        </nav>
+    </aside>
+
+    <main class="dash-main">
+        <div class="flex-between mb-20">
+            <h2 class="title-lg mb-0"><i class="fa-solid fa-gear text-danger"></i> Ajustes de Cuenta</h2>
         </div>
-        <div class="form-group mb-20">
-            <label>Nivel de Autorización (Rol Inmodificable)</label>
-            <input type="text" class="input-light text-muted" value="<?= strtoupper($user['role']) ?>" readonly>
+        
+        <?php if ($mensaje): ?>
+            <div class="container-box text-center text-success-bold mb-20">
+                <?= htmlspecialchars($mensaje) ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="flex-container-50-50 bg-transparent">
+            <div class="flex-col container-box">
+                <h3 class="title-md mb-20 text-center">Foto de Perfil</h3>
+                <div class="avatar-upload-container">
+                    <img src="<?= htmlspecialchars($avatar_actual) ?>" alt="Tu Avatar" class="avatar-preview">
+                    
+                    <form method="POST" action="" enctype="multipart/form-data" class="w-100 text-center">
+                        <input type="file" name="avatar_file" class="input-light mb-10" accept="image/png, image/jpeg" required>
+                        <button type="submit" name="subir_avatar" class="btn-confirm-bright-green w-100"><i class="fa-solid fa-upload"></i> Subir Nueva Foto</button>
+                    </form>
+
+                    <?php if ($usuarioData['avatar']): ?>
+                    <form method="POST" action="" class="w-100 mt-10">
+                        <button type="submit" name="eliminar_avatar" class="btn-outline w-100 text-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar tu foto de perfil actual?');"><i class="fa-solid fa-trash"></i> Eliminar Foto</button>
+                    </form>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="flex-col container-box">
+                <h3 class="title-md mb-20">Datos Personales</h3>
+                <form method="POST" action="">
+                    <div class="form-group mb-20">
+                        <label>Nombre de Usuario Público</label>
+                        <input type="text" name="username" class="input-light" value="<?= htmlspecialchars($usuarioData['username']) ?>" required>
+                    </div>
+                    <div class="form-group mb-20">
+                        <label>Correo Electrónico de Contacto</label>
+                        <input type="email" name="email" class="input-light" value="<?= htmlspecialchars($usuarioData['email']) ?>" required>
+                    </div>
+                    <div class="form-group mb-20">
+                        <label>Nivel de Autorización (Inmodificable)</label>
+                        <input type="text" class="input-light text-muted" value="<?= strtoupper($usuarioData['role']) ?>" readonly>
+                    </div>
+                    <button type="submit" name="actualizar_datos" class="btn-action-orange w-100 mt-15"><i class="fa-solid fa-floppy-disk"></i> Guardar Cambios</button>
+                </form>
+            </div>
         </div>
-        <button type="submit" class="btn-confirm-bright-green w-100">Guardar Cambios Efectivos</button>
-    </form>
-</section>
+    </main>
+</div>
+
 <?php require_once '../includes/footer.php'; ?>

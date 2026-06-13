@@ -14,7 +14,7 @@ $stmt->execute([$id_evento]);
 $evento = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$evento) {
-    header("Location: ../index.php");
+    header("Location: cartelera.php");
     exit();
 }
 
@@ -22,7 +22,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_usuario = $_SESSION['usuario_id'];
     $metodo_pago = $_POST['metodo_pago'];
     $cantidad_asientos = (int)$_POST['cantidad_asientos'];
+    $cupon_aplicado = strtoupper(trim($_POST['cupon_aplicado']));
+    
     $total = $cantidad_asientos * $evento['precio'];
+
+    if ($cupon_aplicado === 'ETERNUMOFICIAL' || $cupon_aplicado === 'FESTEJACONETERNUM') {
+        $stmtVerificar = $pdo->prepare("SELECT COUNT(*) FROM cupones_usados WHERE id_usuario = ? AND codigo_cupon = ?");
+        $stmtVerificar->execute([$id_usuario, $cupon_aplicado]);
+        
+        if ($stmtVerificar->fetchColumn() == 0) {
+            if ($cupon_aplicado === 'ETERNUMOFICIAL') {
+                $total = ceil($cantidad_asientos / 2) * $evento['precio'];
+            } else {
+                $total = $total * 0.8;
+            }
+            
+            $stmtCupon = $pdo->prepare("INSERT INTO cupones_usados (id_usuario, codigo_cupon) VALUES (?, ?)");
+            $stmtCupon->execute([$id_usuario, $cupon_aplicado]);
+        }
+    }
     
     $codigo_qr = "ETNM-" . strtoupper(uniqid()) . "-U" . $id_usuario . "-E" . $id_evento;
 
@@ -42,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 require_once '../includes/header.php';
 ?>
 
-<section class="flex-container-50-50 mt-30">
+<section class="flex-container-50-50 mt-30 mb-50">
     <div class="flex-col">
         <h2 class="title-lg mb-20"><?= htmlspecialchars($evento['titulo']) ?></h2>
         <p class="text-muted mb-20"><i class="fa-solid fa-location-dot text-danger"></i> <?= htmlspecialchars($evento['lugar']) ?></p>
@@ -68,8 +86,18 @@ require_once '../includes/header.php';
                 Total: $<span id="totalPrice">0.00</span>
             </div>
 
-            <form method="POST" action="" id="paymentForm">
+            <div class="coupon-box">
+                <h4 class="mb-0 text-muted"><i class="fa-solid fa-ticket"></i> ¿Tienes un código promocional?</h4>
+                <div class="coupon-input-group">
+                    <input type="text" id="cuponInput" class="input-light">
+                    <button type="button" class="btn-outline" onclick="aplicarCupon()">Canjear</button>
+                </div>
+                <p id="cuponMsg" class="coupon-msg"></p>
+            </div>
+
+            <form method="POST" action="" id="paymentForm" class="mt-20">
                 <input type="hidden" name="cantidad_asientos" id="cantidadAsientosInput" value="0">
+                <input type="hidden" name="cupon_aplicado" id="cuponAplicadoInput" value="">
                 <input type="hidden" id="precioUnitario" value="<?= $evento['precio'] ?>">
 
                 <h4 class="mb-10 text-muted">Selecciona tu Método de Pago</h4>
@@ -86,7 +114,7 @@ require_once '../includes/header.php';
                 
                 <label class="payment-method-box">
                     <input type="radio" name="metodo_pago" value="efectivo" onchange="togglePaymentUI()">
-                    <i class="fa-solid fa-money-bill"></i> Pago en Efectivo (Rapipago / PagoFácil)
+                    <i class="fa-solid fa-money-bill"></i> Pago en Efectivo (Rapipago)
                 </label>
                 
                 <label class="payment-method-box">
@@ -96,18 +124,15 @@ require_once '../includes/header.php';
 
                 <div id="ui-tarjeta" class="credit-card-ui mt-15">
                     <div class="form-group mb-20">
-                        <input type="text" class="input-light" placeholder="Número de Tarjeta" maxlength="19">
+                        <input type="text" class="input-light" placeholder="Número de Tarjeta" maxlength="19" required>
                     </div>
                     <div class="flex-gap-15">
                         <div class="form-group w-100">
-                            <input type="text" class="input-light" placeholder="MM/YY" maxlength="5">
+                            <input type="text" class="input-light" placeholder="MM/YY" maxlength="5" required>
                         </div>
                         <div class="form-group w-100">
-                            <input type="text" class="input-light" placeholder="CVC" maxlength="3">
+                            <input type="text" class="input-light" placeholder="CVC" maxlength="3" required>
                         </div>
-                    </div>
-                    <div class="form-group mt-15">
-                        <input type="text" class="input-light" placeholder="Nombre en la tarjeta">
                     </div>
                 </div>
 
@@ -122,13 +147,11 @@ require_once '../includes/header.php';
 </section>
 
 <script>
+    let cuponActivo = '';
+
     document.addEventListener('DOMContentLoaded', () => {
         const seatMap = document.getElementById('seatMap');
-        const precioUnitario = parseFloat(document.getElementById('precioUnitario').value);
-        const totalPriceEl = document.getElementById('totalPrice');
-        const cantidadAsientosInput = document.getElementById('cantidadAsientosInput');
-        const btnComprar = document.getElementById('btnComprar');
-
+        
         for (let i = 0; i < 48; i++) {
             const seat = document.createElement('div');
             seat.classList.add('seat');
@@ -141,20 +164,51 @@ require_once '../includes/header.php';
             });
             seatMap.appendChild(seat);
         }
-
-        function updateTotal() {
-            const selected = document.querySelectorAll('.seat.selected').length;
-            const total = selected * precioUnitario;
-            cantidadAsientosInput.value = selected;
-            totalPriceEl.innerText = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            
-            if (selected > 0) {
-                btnComprar.removeAttribute('disabled');
-            } else {
-                btnComprar.setAttribute('disabled', 'true');
-            }
-        }
     });
+
+    function aplicarCupon() {
+        const input = document.getElementById('cuponInput').value.trim().toUpperCase();
+        const msg = document.getElementById('cuponMsg');
+        const inputOculto = document.getElementById('cuponAplicadoInput');
+
+        if (input === 'ETERNUMOFICIAL' || input === 'FESTEJACONETERNUM') {
+            cuponActivo = input;
+            inputOculto.value = input;
+            msg.textContent = "¡Cupón válido! Descuento aplicado al total.";
+            msg.className = "coupon-msg text-success active";
+        } else {
+            cuponActivo = '';
+            inputOculto.value = '';
+            msg.textContent = "Cupón inválido o ya utilizado.";
+            msg.className = "coupon-msg text-danger active";
+        }
+        updateTotal();
+    }
+
+    function updateTotal() {
+        const selected = document.querySelectorAll('.seat.selected').length;
+        const precioUnitario = parseFloat(document.getElementById('precioUnitario').value);
+        const cantidadAsientosInput = document.getElementById('cantidadAsientosInput');
+        const totalPriceEl = document.getElementById('totalPrice');
+        const btnComprar = document.getElementById('btnComprar');
+        
+        cantidadAsientosInput.value = selected;
+        let total = selected * precioUnitario;
+
+        if (cuponActivo === 'ETERNUMOFICIAL') {
+            total = Math.ceil(selected / 2) * precioUnitario;
+        } else if (cuponActivo === 'FESTEJACONETERNUM') {
+            total = total * 0.8;
+        }
+
+        totalPriceEl.innerText = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        if (selected > 0) {
+            btnComprar.removeAttribute('disabled');
+        } else {
+            btnComprar.setAttribute('disabled', 'true');
+        }
+    }
 
     function togglePaymentUI() {
         const radios = document.getElementsByName('metodo_pago');
@@ -170,16 +224,18 @@ require_once '../includes/header.php';
         if (selectedValue === 'tarjeta') {
             uiTarjeta.classList.remove('d-none');
             uiMensaje.classList.add('d-none');
+            document.querySelectorAll('#ui-tarjeta input').forEach(inp => inp.setAttribute('required', 'true'));
         } else {
             uiTarjeta.classList.add('d-none');
             uiMensaje.classList.remove('d-none');
+            document.querySelectorAll('#ui-tarjeta input').forEach(inp => inp.removeAttribute('required'));
             
             if (selectedValue === 'mercadopago') {
-                mensajeDinamico.innerHTML = "<i class='fa-solid fa-mobile-screen text-celeste-sm fa-2x mb-10'></i><br>Serás redirigido a la aplicación oficial de MercadoPago al confirmar.";
+                mensajeDinamico.innerHTML = "<i class='fa-solid fa-mobile-screen text-celeste-sm fa-2x mb-10'></i><br>Serás redirigido a la aplicación oficial de MercadoPago.";
             } else if (selectedValue === 'efectivo') {
-                mensajeDinamico.innerHTML = "<i class='fa-solid fa-barcode text-celeste-sm fa-2x mb-10'></i><br>Se generará un código de barras para que abones en tu sucursal más cercana.";
+                mensajeDinamico.innerHTML = "<i class='fa-solid fa-barcode text-celeste-sm fa-2x mb-10'></i><br>Se generará un código de barras para que abones en Rapipago.";
             } else if (selectedValue === 'boleteria') {
-                mensajeDinamico.innerHTML = "<i class='fa-solid fa-building text-celeste-sm fa-2x mb-10'></i><br>Tus asientos quedarán reservados. Debes abonar en la puerta el día del evento.";
+                mensajeDinamico.innerHTML = "<i class='fa-solid fa-building text-celeste-sm fa-2x mb-10'></i><br>Tus asientos quedarán reservados. Debes abonar en la puerta.";
             }
         }
     }
