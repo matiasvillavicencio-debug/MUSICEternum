@@ -11,24 +11,34 @@ $clases = $stmtClases->fetchAll(PDO::FETCH_ASSOC);
 require_once '../includes/header.php';
 ?>
 
+<section class="mt-30 max-w-600 mx-auto text-center">
+    <h2 class="title-lg mb-10"><i class="fa-solid fa-magnifying-glass text-danger"></i> Búsqueda rápida</h2>
+    <input type="text" id="buscadorCartelera" class="input-light w-100 text-center" placeholder="Busca conciertos, bandas, academias o profesores...">
+</section>
+
 <section class="flex-container-50-50 mt-30 mb-50">
     <div class="flex-col">
         <div class="section-header">
             <h2>Cartelera de conciertos</h2>
         </div>
-        <div class="events-grid">
+        <div class="events-grid" id="contenedorEventos">
             <?php foreach ($eventos as $evento): ?>
-                <a href="/MUSICEternum/views/comprar_entrada.php?id=<?= $evento['id'] ?>" class="card-link">
+                <a href="/MUSICEternum/views/comprar_entrada.php?id=<?= $evento['id'] ?>" class="card-link item-filtrable">
                     <div class="event-card">
                         <div class="img-thumb"><i class="fa-solid fa-music"></i></div>
                         <div class="event-info">
                             <h3><?= htmlspecialchars($evento['titulo']) ?></h3>
                             <p class="grid-card-price">$<?= number_format($evento['precio'], 2) ?></p>
                             <p class="event-desc"><?= htmlspecialchars($evento['descripcion']) ?></p>
+                            <p class="text-muted mt-10"><i class="fa-solid fa-location-dot"></i> <?= htmlspecialchars($evento['lugar']) ?></p>
                         </div>
                     </div>
                 </a>
             <?php endforeach; ?>
+            <div id="msgSinEventos" class="container-box text-center text-muted d-none">
+                <i class="fa-solid fa-face-frown fa-2x mb-10"></i><br>
+                No se encontraron conciertos con esa búsqueda.
+            </div>
         </div>
     </div>
 
@@ -36,9 +46,9 @@ require_once '../includes/header.php';
         <div class="section-header">
             <h2>Cursos</h2>
         </div>
-        <div class="grid-academias">
+        <div class="grid-academias" id="contenedorClases">
             <?php foreach ($clases as $clase): ?>
-                <div class="profesor-card">
+                <div class="profesor-card item-filtrable">
                     <div class="profesor-header">
                         <img src="https://ui-avatars.com/api/?name=<?= urlencode($clase['profesor_nombre']) ?>&background=69DDFF&color=282262&bold=true" class="profesor-avatar" alt="Avatar">
                         <div class="profesor-info">
@@ -65,12 +75,16 @@ require_once '../includes/header.php';
                                 data-mod="<?= htmlspecialchars($clase['modalidad']) ?>"
                                 data-niv="<?= htmlspecialchars($clase['nivel']) ?>"
                                 data-desc="<?= htmlspecialchars($clase['descripcion']) ?>">
-                                <i class="fa-solid fa-eye"></i> Vista Previa
+                                <i class="fa-solid fa-eye"></i> Vista previa
                             </button>
                         </div>
                     </div>
                 </div>
             <?php endforeach; ?>
+            <div id="msgSinClases" class="container-box text-center text-muted d-none">
+                <i class="fa-solid fa-face-frown fa-2x mb-10"></i><br>
+                No se encontraron clases con esa búsqueda.
+            </div>
         </div>
     </div>
 </section>
@@ -96,6 +110,42 @@ require_once '../includes/header.php';
 </div>
 
 <script>
+    const buscador = document.getElementById('buscadorCartelera');
+    
+    buscador.addEventListener('input', function() {
+        const filtro = this.value.toLowerCase();
+        
+        let eventosVisibles = 0;
+        const eventos = document.querySelectorAll('#contenedorEventos .item-filtrable');
+        eventos.forEach(evento => {
+            const texto = evento.textContent.toLowerCase();
+            if (texto.includes(filtro)) {
+                evento.classList.remove('d-none');
+                eventosVisibles++;
+            } else {
+                evento.classList.add('d-none');
+            }
+        });
+        
+        const msgEventos = document.getElementById('msgSinEventos');
+        eventosVisibles === 0 ? msgEventos.classList.remove('d-none') : msgEventos.classList.add('d-none');
+
+        let clasesVisibles = 0;
+        const clases = document.querySelectorAll('#contenedorClases .item-filtrable');
+        clases.forEach(clase => {
+            const texto = clase.textContent.toLowerCase();
+            if (texto.includes(filtro)) {
+                clase.classList.remove('d-none');
+                clasesVisibles++;
+            } else {
+                clase.classList.add('d-none');
+            }
+        });
+        
+        const msgClases = document.getElementById('msgSinClases');
+        clasesVisibles === 0 ? msgClases.classList.remove('d-none') : msgClases.classList.add('d-none');
+    });
+
     const btnsPreview = document.querySelectorAll('.btn-open-preview');
     const modalPreview = document.getElementById('modalPreview');
     const btnClosePreview = document.getElementById('btnClosePreview');

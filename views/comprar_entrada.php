@@ -8,6 +8,8 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 $id_evento = $_GET['id'] ?? null; 
+$id_usuario = $_SESSION['usuario_id'];
+$rol_usuario = $_SESSION['role'];
 
 $stmt = $pdo->prepare("SELECT * FROM eventos WHERE id = ?");
 $stmt->execute([$id_evento]);
@@ -18,8 +20,33 @@ if (!$evento) {
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id_usuario = $_SESSION['usuario_id'];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_resena'])) {
+    if ($rol_usuario !== 'artista') {
+        $calificacion = (int)$_POST['calificacion'];
+        $comentario = trim($_POST['comentario']);
+        $imagen_nombre = null;
+
+        if (isset($_FILES['imagen_resena']) && $_FILES['imagen_resena']['error'] === UPLOAD_ERR_OK) {
+            $directorio = '../uploads/reviews/';
+            if (!is_dir($directorio)) {
+                mkdir($directorio, 0777, true);
+            }
+            $ext = strtolower(pathinfo($_FILES['imagen_resena']['name'], PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                $imagen_nombre = time() . '_' . uniqid() . '.' . $ext;
+                move_uploaded_file($_FILES['imagen_resena']['tmp_name'], $directorio . $imagen_nombre);
+            }
+        }
+
+        $stmtRev = $pdo->prepare("INSERT INTO resenas_eventos (id_evento, id_usuario, calificacion, comentario, imagen) VALUES (?, ?, ?, ?, ?)");
+        $stmtRev->execute([$id_evento, $id_usuario, $calificacion, $comentario, $imagen_nombre]);
+        
+        header("Location: comprar_entrada.php?id=" . $id_evento . "#seccion-resenas");
+        exit();
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['metodo_pago'])) {
     $metodo_pago = $_POST['metodo_pago'];
     $cantidad_asientos = (int)$_POST['cantidad_asientos'];
     $cupon_aplicado = strtoupper(trim($_POST['cupon_aplicado']));
@@ -48,6 +75,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id_usuario, $id_evento, $cantidad_asientos, $total, $metodo_pago, $codigo_qr]);
 
+    if (isset($_POST['is_ajax'])) {
+        exit(); 
+    }
+
     if ($metodo_pago === 'mercadopago') {
         header("Location: https://www.mercadopago.com.ar/");
         exit();
@@ -55,6 +86,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: mis_entradas.php?msg=compra_exitosa");
         exit();
     }
+}
+
+$stmtResenas = $pdo->prepare("SELECT r.*, u.username, u.avatar FROM resenas_eventos r JOIN usuarios u ON r.id_usuario = u.id WHERE r.id_evento = ? ORDER BY r.fecha DESC");
+$stmtResenas->execute([$id_evento]);
+$resenas = $stmtResenas->fetchAll(PDO::FETCH_ASSOC);
+
+$promedio = 0;
+$total_resenas = count($resenas);
+if ($total_resenas > 0) {
+    $suma = array_sum(array_column($resenas, 'calificacion'));
+    $promedio = round($suma / $total_resenas, 1);
 }
 
 require_once '../includes/header.php';
@@ -70,7 +112,7 @@ require_once '../includes/header.php';
             
             <div class="seat-legend">
                 <div class="legend-item"><div class="legend-box box-available"></div> Disponible</div>
-                <div class="legend-item"><div class="legend-box box-selected"></div> Tu elección</div>
+                <div class="legend-item"><div class="legend-box box-selected"></div> Tu Elección</div>
                 <div class="legend-item"><div class="legend-box box-occupied"></div> Ocupado</div>
             </div>
 
@@ -100,7 +142,7 @@ require_once '../includes/header.php';
                 <input type="hidden" name="cupon_aplicado" id="cuponAplicadoInput" value="">
                 <input type="hidden" id="precioUnitario" value="<?= $evento['precio'] ?>">
 
-                <h4 class="mb-10 text-muted">Selecciona tu Método de pago</h4>
+                <h4 class="mb-10 text-muted">Selecciona tu Método de Pago</h4>
                 
                 <label class="payment-method-box">
                     <input type="radio" name="metodo_pago" value="tarjeta" onchange="togglePaymentUI()" checked>
@@ -119,7 +161,7 @@ require_once '../includes/header.php';
                 
                 <label class="payment-method-box">
                     <input type="radio" name="metodo_pago" value="boleteria" onchange="togglePaymentUI()">
-                    <i class="fa-solid fa-ticket"></i> Pagar en boletería
+                    <i class="fa-solid fa-ticket"></i> Pagar en Boletería
                 </label>
 
                 <div id="ui-tarjeta" class="credit-card-ui mt-15">
@@ -140,9 +182,86 @@ require_once '../includes/header.php';
                     <p class="text-muted" id="mensajeDinamico"></p>
                 </div>
 
-                <button type="submit" class="btn-confirm-bright-green w-100 mt-15" id="btnComprar" disabled>Confirmar pago</button>
+                <button type="submit" class="btn-confirm-bright-green w-100 mt-15" id="btnComprar" disabled>Confirmar Pago Seguro</button>
             </form>
         </div>
+    </div>
+</section>
+
+<section id="seccion-resenas" class="reviews-section">
+    <div class="reviews-header">
+        <div>
+            <h2 class="title-lg mb-0">Reseñas del público</h2>
+            <p class="text-muted">Descubre qué opinan los fans sobre este evento.</p>
+        </div>
+        <div class="review-stats">
+            <div class="review-stats-score"><?= number_format($promedio, 1) ?></div>
+            <div>
+                <div class="review-stats-stars">
+                    <?php for($i=1; $i<=5; $i++): ?>
+                        <i class="fa-solid fa-star <?= $i <= round($promedio) ? 'text-gold' : 'text-gray' ?>"></i>
+                    <?php endfor; ?>
+                </div>
+                <p class="text-muted text-sm m-0"><?= $total_resenas ?> valoraciones</p>
+            </div>
+        </div>
+    </div>
+
+    <?php if ($rol_usuario !== 'artista'): ?>
+    <div class="review-form-box">
+        <h3 class="title-md mb-15">Escribe tu reseña</h3>
+        <form method="POST" action="" enctype="multipart/form-data">
+            <input type="hidden" name="submit_resena" value="1">
+            
+            <div class="star-rating-group">
+                <input type="radio" id="star5" name="calificacion" value="5" required><label for="star5"><i class="fa-solid fa-star"></i></label>
+                <input type="radio" id="star4" name="calificacion" value="4"><label for="star4"><i class="fa-solid fa-star"></i></label>
+                <input type="radio" id="star3" name="calificacion" value="3"><label for="star3"><i class="fa-solid fa-star"></i></label>
+                <input type="radio" id="star2" name="calificacion" value="2"><label for="star2"><i class="fa-solid fa-star"></i></label>
+                <input type="radio" id="star1" name="calificacion" value="1"><label for="star1"><i class="fa-solid fa-star"></i></label>
+            </div>
+            
+            <textarea name="comentario" class="input-light w-100" rows="3" placeholder="¿Qué te pareció el evento? Cuéntanos tu experiencia..." required></textarea>
+            
+            <div class="file-upload-box">
+                <label class="text-muted block mb-10"><i class="fa-solid fa-camera"></i> Subir foto del evento (Opcional)</label>
+                <input type="file" name="imagen_resena" accept="image/png, image/jpeg, image/webp" class="w-100">
+            </div>
+            
+            <button type="submit" class="btn-action-orange mt-15 px-30">Publicar Reseña</button>
+        </form>
+    </div>
+    <?php endif; ?>
+
+    <div class="review-grid">
+        <?php foreach ($resenas as $resena): ?>
+        <div class="review-card">
+            <div class="review-card-header">
+                <img src="<?= $resena['avatar'] ? '/MUSICEternum/uploads/avatars/' . $resena['avatar'] : 'https://ui-avatars.com/api/?name=' . urlencode($resena['username']) . '&background=00B4D8&color=fff' ?>" class="review-avatar" alt="Avatar">
+                <div>
+                    <p class="review-author"><?= htmlspecialchars($resena['username']) ?></p>
+                    <p class="review-date"><?= date('d/m/Y', strtotime($resena['fecha'])) ?></p>
+                </div>
+            </div>
+            <div class="review-card-stars">
+                <?php for($i=1; $i<=5; $i++): ?>
+                    <i class="fa-solid fa-star <?= $i <= $resena['calificacion'] ? 'text-gold' : 'text-gray' ?>"></i>
+                <?php endfor; ?>
+            </div>
+            <p class="review-text"><?= nl2br(htmlspecialchars($resena['comentario'])) ?></p>
+            
+            <?php if ($resena['imagen']): ?>
+                <img src="/MUSICEternum/uploads/reviews/<?= htmlspecialchars($resena['imagen']) ?>" class="review-uploaded-img" alt="Foto del evento">
+            <?php endif; ?>
+        </div>
+        <?php endforeach; ?>
+        
+        <?php if (empty($resenas)): ?>
+            <div class="container-box text-center text-muted w-100" style="grid-column: 1 / -1;">
+                <i class="fa-solid fa-comment-slash fa-2x mb-10"></i><br>
+                Aún no hay reseñas para este evento. ¡Sé el primero en compartir tu experiencia!
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -239,6 +358,35 @@ require_once '../includes/header.php';
             }
         }
     }
+
+    document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+        const metodoElegido = document.querySelector('input[name="metodo_pago"]:checked').value;
+        
+        if (metodoElegido === 'mercadopago') {
+            e.preventDefault(); 
+            
+            const btnSubmit = document.getElementById('btnComprar');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Conectando...';
+
+            const titulo = "Entrada: <?= htmlspecialchars($evento['titulo']) ?>";
+            const precio = document.getElementById('totalPrice').innerText.replace(/,/g, '');
+            const cantidad = document.getElementById('cantidadAsientosInput').value;
+            
+            const formData = new FormData(this);
+            formData.append('is_ajax', '1');
+            
+            try {
+                await fetch(window.location.href, { method: 'POST', body: formData });
+                if (typeof pagarConMercadoPago === 'function') {
+                    pagarConMercadoPago(titulo, precio, cantidad);
+                }
+            } catch (error) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Confirmar Pago Seguro";
+            }
+        }
+    });
 </script>
 
 <?php require_once '../includes/footer.php'; ?>
