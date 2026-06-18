@@ -12,6 +12,8 @@ $rol = $_SESSION['role'];
 
 $mis_clases = [];
 $total_alumnos = 0;
+$total_ingresos = 0;
+$mensajes_sin_leer = 0;
 
 if (isset($_GET['eliminar_clase']) && $rol === 'profesor') {
     $id_clase = $_GET['eliminar_clase'];
@@ -26,9 +28,17 @@ if ($rol === 'profesor') {
     $stmt->execute([$id_usuario]);
     $mis_clases = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmtAlumnos = $pdo->prepare("SELECT COUNT(*) FROM inscripciones i JOIN clases c ON i.id_clase = c.id WHERE c.id_profesor = ?");
+    $stmtAlumnos = $pdo->prepare("SELECT COUNT(DISTINCT i.id_usuario) FROM inscripciones i JOIN clases c ON i.id_clase = c.id WHERE c.id_profesor = ?");
     $stmtAlumnos->execute([$id_usuario]);
     $total_alumnos = $stmtAlumnos->fetchColumn();
+
+    $stmtIngresos = $pdo->prepare("SELECT SUM(i.total) FROM inscripciones i JOIN clases c ON i.id_clase = c.id WHERE c.id_profesor = ?");
+    $stmtIngresos->execute([$id_usuario]);
+    $total_ingresos = $stmtIngresos->fetchColumn() ?: 0;
+
+    $stmtMsgs = $pdo->prepare("SELECT COUNT(*) FROM mensajes WHERE id_receptor = ? AND leido = 0");
+    $stmtMsgs->execute([$id_usuario]);
+    $mensajes_sin_leer = $stmtMsgs->fetchColumn();
 }
 
 require_once '../includes/header.php';
@@ -37,7 +47,7 @@ require_once '../includes/header.php';
 <div class="dash-wrapper">
     <aside class="dash-sidebar">
         <div class="dash-sidebar-user text-center">
-            <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['username']) ?>&background=00B4D8&color=fff&bold=true" alt="Avatar" class="avatar-md mb-10">
+            <img src="<?= htmlspecialchars($avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($_SESSION['username']) . '&background=00B4D8&color=fff&bold=true') ?>" alt="Avatar" class="avatar-md mb-10">
             <h3 class="title-md text-blanco"><?= htmlspecialchars($_SESSION['username']) ?></h3>
             <p class="text-celeste-sm"><?= strtoupper($rol) ?></p>
         </div>
@@ -46,15 +56,17 @@ require_once '../includes/header.php';
             <a href="dashboard.php" class="dash-nav-item active"><i class="fa-solid fa-table-columns"></i> Panel Principal</a>
             
             <?php if ($rol === 'profesor'): ?>
-                <a href="crear_clase.php" class="dash-nav-item text-success-bold"><i class="fa-solid fa-plus"></i> Crear Nueva Clase</a>
-                <a href="mis_alumnos.php" class="dash-nav-item"><i class="fa-solid fa-users"></i> Mis Alumnos</a>
-                <a href="subir_material.php" class="dash-nav-item"><i class="fa-solid fa-file-arrow-up"></i> Subir Material</a>
+                <a href="dar_clase.php" class="dash-nav-item text-danger"><i class="fa-solid fa-video"></i> Dar clase en vivo</a>
+                <a href="mis_alumnos.php" class="dash-nav-item"><i class="fa-solid fa-users"></i> Mis alumnos</a>
+                <a href="subir_material.php" class="dash-nav-item"><i class="fa-solid fa-file-arrow-up"></i> Subir material</a>
+                <a href="mensajes.php" class="dash-nav-item"><i class="fa-solid fa-envelope"></i> Mensajes <?php if($mensajes_sin_leer > 0): ?><span class="badge-noti"><?= $mensajes_sin_leer ?></span><?php endif; ?></a>
+                <a href="estadisticas.php" class="dash-nav-item"><i class="fa-solid fa-chart-line"></i> Estadísticas e ingresos</a>
             <?php elseif ($rol === 'alumno'): ?>
-                <a href="mis_cursos.php" class="dash-nav-item"><i class="fa-solid fa-book"></i> Mis Cursos</a>
+                <a href="mis_cursos.php" class="dash-nav-item"><i class="fa-solid fa-book"></i> Mis cursos</a>
                 <a href="calificaciones.php" class="dash-nav-item"><i class="fa-solid fa-star"></i> Calificaciones</a>
-                <a href="material_estudio.php" class="dash-nav-item"><i class="fa-solid fa-folder-open"></i> Material de Estudio</a>
+                <a href="material_estudio.php" class="dash-nav-item"><i class="fa-solid fa-folder-open"></i> Material de estudio</a>
             <?php elseif ($rol === 'espectador'): ?>
-                <a href="mis_entradas.php" class="dash-nav-item"><i class="fa-solid fa-ticket"></i> Mis Entradas</a>
+                <a href="mis_entradas.php" class="dash-nav-item"><i class="fa-solid fa-ticket"></i> Mis entradas</a>
             <?php endif; ?>
             
             <a href="ajustes.php" class="dash-nav-item"><i class="fa-solid fa-gear"></i> Configuración</a>
@@ -64,8 +76,10 @@ require_once '../includes/header.php';
     <main class="dash-main">
         <?php if ($rol === 'profesor'): ?>
             <div class="flex-between mb-20">
-                <h2 class="title-lg mb-0"><i class="fa-solid fa-chalkboard-user text-danger"></i> Gestión de Academia</h2>
-                <a href="crear_clase.php" class="btn-confirm-bright-green"><i class="fa-solid fa-plus"></i> Publicar Curso</a>
+                <h2 class="title-lg mb-0"><i class="fa-solid fa-chalkboard-user text-danger"></i> Gestión de academia</h2>
+                <div class="flex-gap-15">
+                    <a href="crear_clase.php" class="btn-confirm-bright-green"><i class="fa-solid fa-plus"></i> Publicar curso</a>
+                </div>
             </div>
 
             <div class="grid-3 mb-30">
@@ -73,34 +87,48 @@ require_once '../includes/header.php';
                     <div class="stat-icon"><i class="fa-solid fa-book-open"></i></div>
                     <div class="stat-info">
                         <h3><?= count($mis_clases) ?></h3>
-                        <p>Clases Publicadas</p>
+                        <p>Clases publicadas</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
                     <div class="stat-info">
                         <h3><?= $total_alumnos ?></h3>
-                        <p>Alumnos Inscritos</p>
+                        <p>Alumnos inscritos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon text-success-bold"><i class="fa-solid fa-sack-dollar"></i></div>
+                    <div class="stat-info">
+                        <h3>$<?= number_format($total_ingresos, 2) ?></h3>
+                        <p>Ingresos Brutos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon text-danger"><i class="fa-solid fa-envelope"></i></div>
+                    <div class="stat-info">
+                        <h3><?= $mensajes_sin_leer ?></h3>
+                        <p>Mensajes sin leer</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
                     <div class="stat-info">
                         <h3>5.0</h3>
-                        <p>Calificación Media</p>
+                        <p>Calificación media</p>
                     </div>
                 </div>
             </div>
 
             <div class="container-box w-100 bg-transparent">
-                <h3 class="title-md mb-20">Mis Clases en Cartelera</h3>
+                <h3 class="title-md mb-20">Mis Clases</h3>
                 <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Título del Curso</th>
+                            <th>Título del curso</th>
                             <th>Modalidad</th>
-                            <th>Precio Base</th>
+                            <th>Precio</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -120,7 +148,7 @@ require_once '../includes/header.php';
                         
                         <?php if (empty($mis_clases)): ?>
                         <tr>
-                            <td colspan="5" class="text-center text-muted p-15">Aún no has publicado ninguna clase en la cartelera. Selecciona "Publicar Curso" para empezar.</td>
+                            <td colspan="5" class="text-center text-muted p-15">Aún no has publicado ninguna clase en la cartelera. Selecciona "Publicar curso" para empezar.</td>
                         </tr>
                         <?php endif; ?>
                     </tbody>
@@ -134,9 +162,9 @@ require_once '../includes/header.php';
             <div class="container-box text-center">
                 <p class="text-muted p-15 mb-20">Navega utilizando el menú lateral izquierdo para acceder a todas las funciones de tu cuenta.</p>
                 <?php if ($rol === 'alumno'): ?>
-                    <a href="mis_cursos.php" class="btn-action-orange">Ir a Mis Cursos</a>
+                    <a href="mis_cursos.php" class="btn-action-orange">Ir a Mis cursos</a>
                 <?php elseif ($rol === 'espectador'): ?>
-                    <a href="mis_entradas.php" class="btn-action-orange">Ver Mis Tickets</a>
+                    <a href="mis_entradas.php" class="btn-action-orange">Ver Mis tickets</a>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

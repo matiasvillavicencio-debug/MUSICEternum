@@ -153,9 +153,7 @@ body {
 
 .input-light:focus { border-color: var(--azul-login); }
 
-.btn-confirm-bright-green { background: var(--verde-brillante); color: var(--azul-profundo); border: none; padding: 15px; border-radius: 15px; font-family: 'Oswald', sans-serif; font-size: 18px; cursor: pointer; text-transform: uppercase; transition: 0.2s; font-weight: bold; }
-
-.btn-confirm-bright-green:hover { background: #00DB58; }
+.btn-confirm-bright-green { background: var(--blanco); color: var(--azul-profundo); border: none; padding: 15px; border-radius: 15px; font-family: 'Oswald', sans-serif; font-size: 18px; cursor: pointer; text-transform: uppercase; transition: 0.2s; font-weight: bold; }
 
 .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 
@@ -672,5 +670,5 @@ body {
     .footer-grid { grid-template-columns: 1fr; text-align: center; }
     .footer-brand p { margin: 0 auto 25px; }
     .social-links { justify-content: center; }
-    .footer-links a:hover { transform: translateY(-3px); translateX:(0); }
+    .footer-links a:hover { transform: translateY(-3px); translate:(0); }
 }

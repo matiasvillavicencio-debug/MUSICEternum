@@ -70,7 +70,7 @@ require_once '../includes/header.php';
             
             <div class="seat-legend">
                 <div class="legend-item"><div class="legend-box box-available"></div> Disponible</div>
-                <div class="legend-item"><div class="legend-box box-selected"></div> Tu Elección</div>
+                <div class="legend-item"><div class="legend-box box-selected"></div> Tu elección</div>
                 <div class="legend-item"><div class="legend-box box-occupied"></div> Ocupado</div>
             </div>
 
@@ -80,7 +80,7 @@ require_once '../includes/header.php';
 
     <div class="flex-col">
         <div class="payment-box">
-            <h3 class="title-md text-center"><i class="fa-solid fa-cart-shopping"></i> Resumen de Compra</h3>
+            <h3 class="title-md text-center"><i class="fa-solid fa-cart-shopping"></i> Resumen de compra</h3>
             
             <div class="total-price-display">
                 Total: $<span id="totalPrice">0.00</span>
@@ -100,7 +100,7 @@ require_once '../includes/header.php';
                 <input type="hidden" name="cupon_aplicado" id="cuponAplicadoInput" value="">
                 <input type="hidden" id="precioUnitario" value="<?= $evento['precio'] ?>">
 
-                <h4 class="mb-10 text-muted">Selecciona tu Método de Pago</h4>
+                <h4 class="mb-10 text-muted">Selecciona tu Método de pago</h4>
                 
                 <label class="payment-method-box">
                     <input type="radio" name="metodo_pago" value="tarjeta" onchange="togglePaymentUI()" checked>
@@ -119,7 +119,7 @@ require_once '../includes/header.php';
                 
                 <label class="payment-method-box">
                     <input type="radio" name="metodo_pago" value="boleteria" onchange="togglePaymentUI()">
-                    <i class="fa-solid fa-ticket"></i> Pagar en Boletería
+                    <i class="fa-solid fa-ticket"></i> Pagar en boletería
                 </label>
 
                 <div id="ui-tarjeta" class="credit-card-ui mt-15">
@@ -140,7 +140,7 @@ require_once '../includes/header.php';
                     <p class="text-muted" id="mensajeDinamico"></p>
                 </div>
 
-                <button type="submit" class="btn-confirm-bright-green w-100 mt-15" id="btnComprar" disabled>Confirmar Pago Seguro</button>
+                <button type="submit" class="btn-confirm-bright-green w-100 mt-15" id="btnComprar" disabled>Confirmar pago</button>
             </form>
         </div>
     </div>

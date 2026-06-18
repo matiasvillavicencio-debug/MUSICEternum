@@ -47,6 +47,9 @@ $stmtOtro = $pdo->prepare("SELECT username FROM usuarios WHERE id = ?");
 $stmtOtro->execute([$id_otro]);
 $otro_usuario = $stmtOtro->fetchColumn();
 
+$stmtLeido = $pdo->prepare("UPDATE mensajes SET leido = 1 WHERE id_clase = ? AND id_emisor = ? AND id_receptor = ?");
+$stmtLeido->execute([$id_clase, $id_otro, $mi_id]);
+
 require_once '../includes/header.php';
 ?>
 

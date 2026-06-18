@@ -13,22 +13,22 @@
             </div>
             
             <div class="footer-links">
-                <h3>Enlaces Rápidos</h3>
+                <h3>Enlaces rápidos</h3>
                 <ul>
                     <li><a href="/MUSICEternum/index.php">Inicio</a></li>
                     <li><a href="/MUSICEternum/views/novedades.php">Novedades</a></li>
-                    <li><a href="/MUSICEternum/views/cartelera.php">Cartelera Oficial</a></li>
-                    <li><a href="/MUSICEternum/views/nosotros.php">Sobre Nosotros</a></li>
+                    <li><a href="/MUSICEternum/views/cartelera.php">Cartelera</a></li>
+                    <li><a href="/MUSICEternum/views/nosotros.php">Sobre nosotros</a></li>
                 </ul>
             </div>
             
             <div class="footer-links">
                 <h3>Soporte</h3>
                 <ul>
-                    <li><a href="#">Preguntas Frecuentes</a></li>
-                    <li><a href="#">Términos y Condiciones</a></li>
-                    <li><a href="#">Política de Privacidad</a></li>
-                    <li><a href="#">Contacto Directo</a></li>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Contacto directo</a></li>
                 </ul>
             </div>
             
@@ -43,9 +43,6 @@
 
         </div>
         
-        <div class="footer-bottom">
-            <p>&copy; 2026 Eternum MUSIC. Todos los derechos reservados.</p>
-        </div>
     </footer>
 
     <script src="/MUSICEternum/assets/js/script.js"></script>

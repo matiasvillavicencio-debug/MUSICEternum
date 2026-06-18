@@ -3,6 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/db.php';
+
 $avatar_url = "";
 $mensajes_sin_leer = 0;
 
@@ -19,11 +21,14 @@ if (isset($_SESSION['usuario_id'])) {
         $avatar_url = "https://ui-avatars.com/api/?name=" . urlencode($_SESSION['username']) . "&background=00B4D8&color=fff&bold=true";
     }
     
-    $stmtMsgNav = $pdo->prepare("SELECT COUNT(*) FROM mensajes WHERE id_receptor = ? AND leido = 0");
-    $stmtMsgNav->execute([$id_usuario_nav]);
-    $mensajes_sin_leer = $stmtMsgNav->fetchColumn();
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'profesor') {
+        $stmtMsgNav = $pdo->prepare("SELECT COUNT(*) FROM mensajes WHERE id_receptor = ? AND leido = 0");
+        $stmtMsgNav->execute([$id_usuario_nav]);
+        $mensajes_sin_leer = $stmtMsgNav->fetchColumn();
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>

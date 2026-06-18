@@ -14,7 +14,7 @@ require_once '../includes/header.php';
 <section class="flex-container-50-50 mt-30 mb-50">
     <div class="flex-col">
         <div class="section-header">
-            <h2>Cartelera de Conciertos</h2>
+            <h2>Cartelera de conciertos</h2>
         </div>
         <div class="events-grid">
             <?php foreach ($eventos as $evento): ?>
@@ -34,7 +34,7 @@ require_once '../includes/header.php';
 
     <div class="flex-col">
         <div class="section-header">
-            <h2>Academias y Profesores</h2>
+            <h2>Cursos</h2>
         </div>
         <div class="grid-academias">
             <?php foreach ($clases as $clase): ?>
