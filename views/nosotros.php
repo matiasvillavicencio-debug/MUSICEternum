@@ -13,10 +13,6 @@ require_once '../includes/header.php';
         
         <h3>¿Qué nos hace diferentes?</h3>
         <p class="text-muted mb-20">No somos solo una ticketera ni solo una academia. Somos una red integral donde la persona que hoy compra una entrada, mañana puede estar tomando una clase de mezcla, y pasado mañana subiéndose a un escenario publicado en nuestra misma plataforma.</p>
-        
-        <h3>Contacto y Soporte</h3>
-        <p class="text-muted"><i class="fa-solid fa-envelope text-danger"></i> soporte@eternum-music.com</p>
-        <p class="text-muted"><i class="fa-solid fa-location-dot text-danger"></i> Buenos Aires, Argentina</p>
     </div>
 </section>
 

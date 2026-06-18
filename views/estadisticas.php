@@ -40,18 +40,18 @@ require_once '../includes/header.php';
                 <p class="text-celeste-sm">PROFESOR</p>
             </div>
             <nav class="dash-nav">
-                <a href="dashboard.php" class="dash-nav-item"><i class="fa-solid fa-table-columns"></i> Panel Principal</a>
-                <a href="crear_clase.php" class="dash-nav-item text-success-bold"><i class="fa-solid fa-plus"></i> Crear Nueva Clase</a>
-                <a href="mis_alumnos.php" class="dash-nav-item"><i class="fa-solid fa-users"></i> Mis Alumnos</a>
-                <a href="subir_material.php" class="dash-nav-item"><i class="fa-solid fa-file-arrow-up"></i> Subir Material</a>
-                <a href="mensajes.php" class="dash-nav-item"><i class="fa-solid fa-envelope"></i> Bandeja de Entrada</a>
+                <a href="dashboard.php" class="dash-nav-item"><i class="fa-solid fa-table-columns"></i> Panel principal</a>
+                <a href="crear_clase.php" class="dash-nav-item text-success-bold"><i class="fa-solid fa-plus"></i> Crear nueva clase</a>
+                <a href="mis_alumnos.php" class="dash-nav-item"><i class="fa-solid fa-users"></i> Mis alumnos</a>
+                <a href="subir_material.php" class="dash-nav-item"><i class="fa-solid fa-file-arrow-up"></i> Subir material</a>
+                <a href="mensajes.php" class="dash-nav-item"><i class="fa-solid fa-envelope"></i> Bandeja de entrada</a>
                 <a href="estadisticas.php" class="dash-nav-item active"><i class="fa-solid fa-chart-line"></i> Estadísticas</a>
                 <a href="ajustes.php" class="dash-nav-item"><i class="fa-solid fa-gear"></i> Configuración</a>
             </nav>
         </aside>
         <main class="dash-main">
             <div class="flex-between mb-20">
-                <h2 class="title-lg mb-0"><i class="fa-solid fa-chart-pie text-danger"></i> Rendimiento Financiero y Académico</h2>
+                <h2 class="title-lg mb-0"><i class="fa-solid fa-chart-pie text-danger"></i> Rendimiento financiero y académico</h2>
             </div>
             
             <div class="grid-3 mb-30">

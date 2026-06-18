@@ -32,7 +32,6 @@ require_once '../includes/header.php';
             <div class="course-meta">
                 <span><i class="fa-solid fa-chalkboard-user"></i> Creado por <strong><?= htmlspecialchars($clase['profesor_nombre']) ?></strong></span>
                 <span><i class="fa-solid fa-language"></i> Español</span>
-                <span><i class="fa-solid fa-certificate"></i> Certificado de finalización</span>
             </div>
         </div>
         
