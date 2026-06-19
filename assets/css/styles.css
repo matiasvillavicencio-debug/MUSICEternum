@@ -77,13 +77,11 @@ body {
 .nav-links a:hover { color: var(--celeste-vibrante); }
 
 .btn-nav-login {
-    background: var(--rojo-pasion); color: white;
+    background: var(--celeste-vibrante); color: black;
     border: none; padding: 10px 20px; border-radius: 20px;
     font-family: 'Oswald', sans-serif; font-size: 16px; cursor: pointer;
     text-transform: uppercase; transition: 0.3s;
 }
-
-.btn-nav-login:hover { background: #d12424; transform: scale(1.05); }
 
 #hero { min-height: 100vh; display: flex; align-items: center; justify-content: space-between; padding: 100px 50px 50px; max-width: 1200px; margin: 0 auto; gap: 50px; }
 
@@ -556,13 +554,13 @@ body {
 
 .btn-close-modal:hover { background: var(--rojo-pasion); transform: rotate(90deg); }
 
-.course-hero { background: linear-gradient(to right, #1a1640, var(--azul-profundo)); padding: 60px 20px; border-bottom: 4px solid var(--celeste-vibrante); color: var(--blanco); }
+.course-hero { background: linear-gradient(to right, var(--blanco)); padding: 60px 20px; border-bottom: 4px solid var(--celeste-vibrante); color: black; }
 
 .course-hero-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 380px; gap: 50px; align-items: center; }
 
 .course-title { font-family: 'Oswald', sans-serif; font-size: 45px; margin-bottom: 20px; line-height: 1.2; }
 
-.course-subtitle { font-size: 18px; color: var(--blanco-rosaceo); margin-bottom: 25px; line-height: 1.6; max-width: 90%; }
+.course-subtitle { font-size: 18px; color: black; margin-bottom: 25px; line-height: 1.6; max-width: 90%; }
 
 .course-meta { display: flex; gap: 20px; font-size: 15px; margin-bottom: 20px; color: var(--celeste-vibrante); flex-wrap: wrap; }
 
@@ -596,7 +594,7 @@ body {
 
 .bullet-list { list-style: none; padding-left: 0; margin-top: 10px; }
 
-.bullet-list li { position: relative; padding-left: 20px; margin-bottom: 8px; }
+.bullet-list li { position: relative; padding-left: 20px; margin-bottom: 8px; color: black;}
 
 .bullet-list li::before { content: '•'; position: absolute; left: 0; color: var(--celeste-vibrante); font-weight: bold; }
 
