@@ -11,7 +11,7 @@ require_once '../includes/header.php';
 
 <section class="container-box-lg mt-30">
     <div class="camera-container">
-        <h2 class="title-lg text-center"><i class="fa-solid fa-tower-broadcast text-danger"></i> Estudio de Transmisión</h2>
+        <h2 class="title-lg text-center"><i class="fa-solid fa-tower-broadcast text-danger"></i> Clase en vivo</h2>
         
         <video id="liveCamera" class="video-preview" autoplay playsinline muted></video>
         

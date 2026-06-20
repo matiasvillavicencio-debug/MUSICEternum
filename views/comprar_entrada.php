@@ -71,21 +71,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['metodo_pago'])) {
     
     $codigo_qr = "ETNM-" . strtoupper(uniqid()) . "-U" . $id_usuario . "-E" . $id_evento;
 
-    $sql = "INSERT INTO compras (id_usuario, id_evento, cantidad_asientos, total, metodo_pago, codigo_qr) VALUES (?, ?, ?, ?, ?, ?)";
+    $estado = ($metodo_pago === 'efectivo' || $metodo_pago === 'boleteria') ? 'pendiente' : 'aprobado';
+
+    $sql = "INSERT INTO compras (id_usuario, id_evento, cantidad_asientos, total, metodo_pago, codigo_qr, estado) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$id_usuario, $id_evento, $cantidad_asientos, $total, $metodo_pago, $codigo_qr]);
+    $stmt->execute([$id_usuario, $id_evento, $cantidad_asientos, $total, $metodo_pago, $codigo_qr, $estado]);
 
-    if (isset($_POST['is_ajax'])) {
-        exit(); 
-    }
-
-    if ($metodo_pago === 'mercadopago') {
-        header("Location: https://www.mercadopago.com.ar/");
-        exit();
-    } else {
-        header("Location: mis_entradas.php?msg=compra_exitosa");
-        exit();
-    }
+    header("Location: mis_entradas.php?msg=compra_exitosa");
+    exit();
 }
 
 $stmtResenas = $pdo->prepare("SELECT r.*, u.username, u.avatar FROM resenas_eventos r JOIN usuarios u ON r.id_usuario = u.id WHERE r.id_evento = ? ORDER BY r.fecha DESC");
@@ -122,7 +115,7 @@ require_once '../includes/header.php';
 
     <div class="flex-col">
         <div class="payment-box">
-            <h3 class="title-md text-center"><i class="fa-solid fa-cart-shopping"></i> Resumen de compra</h3>
+            <h3 class="title-md text-center"><i class="fa-solid fa-cart-shopping"></i> Resumen de Compra</h3>
             
             <div class="total-price-display">
                 Total: $<span id="totalPrice">0.00</span>
@@ -147,11 +140,6 @@ require_once '../includes/header.php';
                 <label class="payment-method-box">
                     <input type="radio" name="metodo_pago" value="tarjeta" onchange="togglePaymentUI()" checked>
                     <i class="fa-solid fa-credit-card"></i> Tarjeta de Débito o Crédito
-                </label>
-                
-                <label class="payment-method-box">
-                    <input type="radio" name="metodo_pago" value="mercadopago" onchange="togglePaymentUI()">
-                    <i class="fa-solid fa-handshake"></i> MercadoPago
                 </label>
                 
                 <label class="payment-method-box">
@@ -191,7 +179,7 @@ require_once '../includes/header.php';
 <section id="seccion-resenas" class="reviews-section">
     <div class="reviews-header">
         <div>
-            <h2 class="title-lg mb-0">Reseñas del público</h2>
+            <h2 class="title-lg mb-0">Reseñas del Público</h2>
             <p class="text-muted">Descubre qué opinan los fans sobre este evento.</p>
         </div>
         <div class="review-stats">
@@ -257,9 +245,9 @@ require_once '../includes/header.php';
         <?php endforeach; ?>
         
         <?php if (empty($resenas)): ?>
-            <div class="container-box text-center text-muted w-100" style="grid-column: 1 / -1;">
-                <i class="fa-solid fa-comment-slash fa-2x mb-10"></i><br>
-                Aún no hay reseñas para este evento. ¡Sé el primero en compartir tu experiencia!
+            <div class="review-card" style="grid-column: 1 / -1; text-align: center; border: none; background: transparent;">
+                <i class="fa-solid fa-comment-slash fa-2x mb-10 text-muted"></i><br>
+                <span class="text-muted">Aún no hay reseñas para este evento. ¡Sé el primero en compartir tu experiencia!</span>
             </div>
         <?php endif; ?>
     </div>
@@ -349,44 +337,13 @@ require_once '../includes/header.php';
             uiMensaje.classList.remove('d-none');
             document.querySelectorAll('#ui-tarjeta input').forEach(inp => inp.removeAttribute('required'));
             
-            if (selectedValue === 'mercadopago') {
-                mensajeDinamico.innerHTML = "<i class='fa-solid fa-mobile-screen text-celeste-sm fa-2x mb-10'></i><br>Serás redirigido a la aplicación oficial de MercadoPago.";
-            } else if (selectedValue === 'efectivo') {
-                mensajeDinamico.innerHTML = "<i class='fa-solid fa-barcode text-celeste-sm fa-2x mb-10'></i><br>Se generará un código de barras para que abones en Rapipago.";
+            if (selectedValue === 'efectivo') {
+                mensajeDinamico.innerHTML = "<i class='fa-solid fa-barcode text-celeste-sm fa-2x mb-10'></i><br>Tu entrada quedará pendiente. Debes abonar en Rapipago y el administrador aprobará tu ticket.";
             } else if (selectedValue === 'boleteria') {
-                mensajeDinamico.innerHTML = "<i class='fa-solid fa-building text-celeste-sm fa-2x mb-10'></i><br>Tus asientos quedarán reservados. Debes abonar en la puerta.";
+                mensajeDinamico.innerHTML = "<i class='fa-solid fa-building text-celeste-sm fa-2x mb-10'></i><br>Tus asientos quedarán reservados como pendientes. Debes abonar en la puerta para recibir la aprobación.";
             }
         }
     }
-
-    document.getElementById('paymentForm').addEventListener('submit', async function(e) {
-        const metodoElegido = document.querySelector('input[name="metodo_pago"]:checked').value;
-        
-        if (metodoElegido === 'mercadopago') {
-            e.preventDefault(); 
-            
-            const btnSubmit = document.getElementById('btnComprar');
-            btnSubmit.disabled = true;
-            btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Conectando...';
-
-            const titulo = "Entrada: <?= htmlspecialchars($evento['titulo']) ?>";
-            const precio = document.getElementById('totalPrice').innerText.replace(/,/g, '');
-            const cantidad = document.getElementById('cantidadAsientosInput').value;
-            
-            const formData = new FormData(this);
-            formData.append('is_ajax', '1');
-            
-            try {
-                await fetch(window.location.href, { method: 'POST', body: formData });
-                if (typeof pagarConMercadoPago === 'function') {
-                    pagarConMercadoPago(titulo, precio, cantidad);
-                }
-            } catch (error) {
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "Confirmar Pago Seguro";
-            }
-        }
-    });
 </script>
 
 <?php require_once '../includes/footer.php'; ?>

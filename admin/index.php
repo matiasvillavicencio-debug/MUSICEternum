@@ -1,14 +1,25 @@
 <?php
 session_start();
-require_once '../includes/db.php';
+require '../includes/db.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../index.php");
     exit();
 }
 
+if (isset($_GET['aprobar_compra'])) {
+    $id_compra_aprobar = $_GET['aprobar_compra'];
+    $stmtAprobar = $pdo->prepare("UPDATE compras SET estado = 'aprobado' WHERE id = ?");
+    $stmtAprobar->execute([$id_compra_aprobar]);
+    header("Location: index.php");
+    exit();
+}
+
 $eventos = $pdo->query("SELECT * FROM eventos")->fetchAll(PDO::FETCH_ASSOC);
 $clases = $pdo->query("SELECT * FROM clases")->fetchAll(PDO::FETCH_ASSOC);
+
+$stmtPendientes = $pdo->query("SELECT c.*, u.username, e.titulo as evento_titulo FROM compras c JOIN usuarios u ON c.id_usuario = u.id JOIN eventos e ON c.id_evento = e.id WHERE c.estado = 'pendiente' ORDER BY c.fecha_compra DESC");
+$compras_pendientes = $stmtPendientes->fetchAll(PDO::FETCH_ASSOC);
 
 require_once '../includes/header.php';
 ?>
@@ -20,6 +31,42 @@ require_once '../includes/header.php';
             <button class="btn-confirm-bright-green" onclick="window.location.href='crear_evento.php'">+ Añadir Evento</button>
             <button class="btn-action-orange" onclick="window.location.href='crear_clase.php'">+ Añadir Clase</button>
         </div>
+    </div>
+
+    <div class="container-box w-100 bg-transparent mb-40">
+        <h3 class="title-md mb-20"><i class="fa-solid fa-clock-rotate-left text-danger"></i> Entradas Pendientes de Pago</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Código Ticket</th>
+                    <th>Usuario</th>
+                    <th>Evento</th>
+                    <th>Método</th>
+                    <th>Total</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($compras_pendientes as $pendiente): ?>
+                <tr>
+                    <td><strong><?= htmlspecialchars(substr($pendiente['codigo_qr'], 0, 15)) ?>...</strong></td>
+                    <td><?= htmlspecialchars($pendiente['username']) ?></td>
+                    <td><?= htmlspecialchars($pendiente['evento_titulo']) ?></td>
+                    <td><span class="badge badge-pendiente"><?= strtoupper(htmlspecialchars($pendiente['metodo_pago'])) ?></span></td>
+                    <td class="font-bold text-success-bold">$<?= number_format($pendiente['total'], 2) ?></td>
+                    <td>
+                        <a href="index.php?aprobar_compra=<?= $pendiente['id'] ?>" class="btn-confirm-bright-green text-decoration-none" onclick="return confirm('¿Confirmas que recibiste el pago de esta entrada y deseas aprobarla?')"><i class="fa-solid fa-check"></i> Aprobar</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                
+                <?php if (empty($compras_pendientes)): ?>
+                <tr>
+                    <td colspan="6" class="text-center text-muted p-15">Todas las compras han sido procesadas. No hay tickets pendientes.</td>
+                </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
     
     <div class="flex-container-50-50 bg-transparent">
@@ -66,7 +113,7 @@ require_once '../includes/header.php';
                     <tr>
                         <td>#<?= $cl['id'] ?></td>
                         <td><?= htmlspecialchars($cl['titulo']) ?></td>
-                        <td><?= strtoupper($cl['modalidad']) ?></td>
+                        <td><span class="badge badge-modalidad"><?= strtoupper(htmlspecialchars($cl['modalidad'])) ?></span></td>
                         <td class="action-links">
                             <a href="editar_clase.php?id=<?= $cl['id'] ?>"><i class="fa-solid fa-pen text-muted"></i></a>
                             <a href="../includes/eliminar.php?tipo=clase&id=<?= $cl['id'] ?>" class="text-danger"><i class="fa-solid fa-trash"></i></a>

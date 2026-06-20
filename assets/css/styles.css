@@ -135,6 +135,8 @@ body {
 
 .mb-20 { margin-bottom: 20px; }
 
+.mb-40 { margin-bottom: 40px; }
+
 .text-center { text-align: center; }
 
 .text-muted { color: #64748B; }
@@ -156,6 +158,18 @@ body {
 .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 
 .admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid var(--gris-claro); text-align: left; }
+
+.container-box-lg .container-box.bg-transparent,
+.container-box-lg .container-box.bg-transparent .title-md,
+.container-box-lg .container-box.bg-transparent .admin-table th,
+.container-box-lg .container-box.bg-transparent .admin-table td {
+    color: var(--blanco);
+}
+
+.container-box-lg .container-box.bg-transparent .admin-table th,
+.container-box-lg .container-box.bg-transparent .admin-table td {
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+}
 
 .action-links { display: flex; gap: 15px; }
 
@@ -701,6 +715,7 @@ body {
 .review-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--celeste-vibrante); }
 
 .review-author { font-weight: bold; color: var(--blanco); font-size: 16px; margin-bottom: 3px; }
+
 .review-date { color: #64748b; font-size: 13px; }
 
 .review-card-stars { color: #fbbf24; margin-bottom: 15px; font-size: 14px; }
@@ -712,3 +727,47 @@ body {
 .text-gold { color: #fbbf24; }
 
 .text-gray { color: #475569; }
+
+.badge-pendiente { background: #f59e0b; color: var(--blanco); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+
+.badge-aprobado { background: var(--verde-confirmar); color: var(--blanco); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+
+.nosotros-hero { text-align: center; padding: 80px 20px; background: linear-gradient(135deg, rgba(40,34,98,0.9), rgba(217,4,43,0.8)), url('../image/image.jpg') center/cover; border-radius: 20px; margin-bottom: 50px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+
+.nosotros-hero h1 { font-family: 'Oswald', sans-serif; font-size: 55px; color: var(--blanco); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+
+.nosotros-hero p { color: #e2e8f0; font-size: 19px; max-width: 750px; margin: 0 auto; line-height: 1.7; }
+
+.nosotros-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 60px; }
+
+.nosotros-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 40px 30px; border-radius: 15px; text-align: center; transition: 0.3s; }
+
+.nosotros-card:hover { transform: translateY(-10px); border-color: var(--celeste-vibrante); background: rgba(255,255,255,0.06); }
+
+.nosotros-icon { font-size: 45px; color: var(--celeste-vibrante); margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(105,221,255,0.3)); }
+
+.nosotros-card h3 { font-family: 'Oswald', sans-serif; font-size: 24px; color: var(--blanco); margin-bottom: 15px; }
+
+.nosotros-card p { color: #94a3b8; line-height: 1.6; }
+
+.novedades-header { text-align: center; margin-bottom: 50px; padding-top: 20px; }
+
+.novedades-header h1 { font-family: 'Oswald', sans-serif; font-size: 45px; color: var(--blanco); text-transform: uppercase; }
+
+.novedades-header span { color: var(--rojo-pasion); }
+
+.novedades-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-bottom: 60px; }
+
+.novedades-card { background: rgba(0,0,0,0.2); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; display: flex; flex-direction: column; }
+
+.novedades-card:hover { transform: scale(1.02); box-shadow: 0 15px 35px rgba(0,0,0,0.4); border-color: var(--rojo-pasion); }
+
+.novedades-img { width: 100%; height: 220px; object-fit: cover; border-bottom: 3px solid var(--rojo-pasion); }
+
+.novedades-body { padding: 25px; flex: 1; display: flex; flex-direction: column; }
+
+.novedades-meta { display: flex; justify-content: space-between; color: var(--celeste-vibrante); font-size: 12px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+.novedades-title { font-family: 'Oswald', sans-serif; font-size: 24px; color: var(--blanco); margin-bottom: 15px; line-height: 1.3; }
+
+.novedades-text { color: #cbd5e1; line-height: 1.6; font-size: 15px; margin-bottom: 25px; flex: 1; }

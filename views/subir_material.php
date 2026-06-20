@@ -35,7 +35,7 @@ require_once '../includes/header.php';
 
 <section class="container-box mx-auto max-w-600 mt-30">
     <div class="flex-between mb-20">
-        <h2 class="title-md"><i class="fa-solid fa-cloud-arrow-up text-danger"></i> Subir Material</h2>
+        <h2 class="title-md"><i class="fa-solid fa-cloud-arrow-up text-danger"></i> Subir material</h2>
         <a href="dashboard.php" class="text-muted"><i class="fa-solid fa-arrow-left"></i> Volver</a>
     </div>
     
@@ -49,15 +49,15 @@ require_once '../includes/header.php';
             <select name="curso" class="input-light" required>
                 <option value="" disabled selected>Selecciona un curso...</option>
                 <option value="Producción musical básica">Producción musical básica</option>
-                <option value="Teoría Musical Aplicada">Teoría Musical Aplicada</option>
-                <option value="Mezcla y Mastering">Mezcla y Mastering</option>
+                <option value="Teoría Musical Aplicada">Teoría musical aplicada</option>
+                <option value="Mezcla y Mastering">Mezcla y mastering</option>
             </select>
         </div>
         <div class="form-group mb-20">
             <label>Archivo de Estudio (PDF, ZIP, MP3)</label>
             <input type="file" name="archivo" class="input-light" required>
         </div>
-        <button type="submit" class="btn-confirm-bright-green w-100">Subir a la nube de Eternum</button>
+        <button type="submit" class="btn-confirm-bright-green w-100">Subir a la nube</button>
     </form>
 </section>
 

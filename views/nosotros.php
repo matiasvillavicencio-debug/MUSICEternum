@@ -1,19 +1,32 @@
 <?php
 session_start();
+require_once '../includes/db.php';
 require_once '../includes/header.php';
 ?>
 
-<section class="container-box-lg mt-30 mb-50">
-    <div class="section-header justify-center">
-        <h2>Sobre Nosotros</h2>
-    </div>
-    <div class="container-box w-100">
-        <h3>Nuestra Misión</h3>
-        <p class="text-muted mb-20">En Eternum MUSIC creemos que el arte no debe tener barreras. Nacimos con el propósito de unificar a los espectadores, artistas, profesores y alumnos en un solo ecosistema digital que potencie el talento latinoamericano.</p>
-        
-        <h3>¿Qué nos hace diferentes?</h3>
-        <p class="text-muted mb-20">No somos solo una ticketera ni solo una academia. Somos una red integral donde la persona que hoy compra una entrada, mañana puede estar tomando una clase de mezcla, y pasado mañana subiéndose a un escenario publicado en nuestra misma plataforma.</p>
-    </div>
-</section>
+<div class="max-w-1200 mx-auto w-100 mt-20 mb-50">
+    <section class="nosotros-hero">
+        <h1>El Escenario de Todos</h1>
+        <p>Eternum MUSIC nació con un propósito desafiante: unificar la industria musical argentina en un ecosistema digital único, donde bandas, profesores y fanáticos convergen para hacer historia.</p>
+    </section>
+
+    <section class="nosotros-grid">
+        <div class="nosotros-card">
+            <i class="fa-solid fa-ticket nosotros-icon"></i>
+            <h3>Eventos en Vivo</h3>
+            <p>Conectamos a los artistas emergentes y consagrados directamente con su audiencia. Una cartelera ininterrumpida de pasión y sonido en las mejores salas del país.</p>
+        </div>
+        <div class="nosotros-card">
+            <i class="fa-solid fa-graduation-cap nosotros-icon"></i>
+            <h3>Academia Musical</h3>
+            <p>La educación es la base del futuro artístico. Maestros y profesionales dictan masterclasses en producción, teoría y técnica vocal al alcance de un clic.</p>
+        </div>
+        <div class="nosotros-card">
+            <i class="fa-solid fa-handshake-angle nosotros-icon"></i>
+            <h3>Comunidad y Respaldo</h3>
+            <p>No somos solo una ticketea, somos tu soporte. Fomentamos la crítica constructiva, la conexión directa con creadores y la compra segura sin intermediarios abusivos.</p>
+        </div>
+    </section>
+</div>
 
 <?php require_once '../includes/footer.php'; ?>
