@@ -77,7 +77,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['metodo_pago'])) {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id_usuario, $id_evento, $cantidad_asientos, $total, $metodo_pago, $codigo_qr, $estado]);
 
-    header("Location: mis_entradas.php?msg=compra_exitosa");
+    if ($estado === 'pendiente') {
+        header("Location: mis_entradas.php?msg=compra_pendiente");
+    } else {
+        header("Location: mis_entradas.php?msg=compra_exitosa");
+    }
     exit();
 }
 
@@ -332,6 +336,7 @@ require_once '../includes/header.php';
             uiTarjeta.classList.remove('d-none');
             uiMensaje.classList.add('d-none');
             document.querySelectorAll('#ui-tarjeta input').forEach(inp => inp.setAttribute('required', 'true'));
+            document.getElementById('btnComprar').innerText = "Confirmar Pago Seguro";
         } else {
             uiTarjeta.classList.add('d-none');
             uiMensaje.classList.remove('d-none');
@@ -339,8 +344,10 @@ require_once '../includes/header.php';
             
             if (selectedValue === 'efectivo') {
                 mensajeDinamico.innerHTML = "<i class='fa-solid fa-barcode text-celeste-sm fa-2x mb-10'></i><br>Tu entrada quedará pendiente. Debes abonar en Rapipago y el administrador aprobará tu ticket.";
+                document.getElementById('btnComprar').innerText = "Reservar Entrada";
             } else if (selectedValue === 'boleteria') {
                 mensajeDinamico.innerHTML = "<i class='fa-solid fa-building text-celeste-sm fa-2x mb-10'></i><br>Tus asientos quedarán reservados como pendientes. Debes abonar en la puerta para recibir la aprobación.";
+                document.getElementById('btnComprar').innerText = "Reservar Entrada";
             }
         }
     }

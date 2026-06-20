@@ -26,19 +26,19 @@ require_once '../includes/header.php';
 
 <section class="container-box-lg">
     <div class="flex-between mt-30 mb-20">
-        <h2 class="title-lg mb-0">Control de Servidor</h2>
+        <h2 class="title-lg mb-0">Panel de control - Administrador</h2>
         <div class="flex-gap-15">
-            <button class="btn-confirm-bright-green" onclick="window.location.href='crear_evento.php'">+ Añadir Evento</button>
-            <button class="btn-action-orange" onclick="window.location.href='crear_clase.php'">+ Añadir Clase</button>
+            <button class="btn-confirm-bright-green" onclick="window.location.href='crear_evento.php'">+ Añadir evento</button>
+            <button class="btn-action-orange" onclick="window.location.href='crear_clase.php'">+ Añadir clase</button>
         </div>
     </div>
 
     <div class="container-box w-100 bg-transparent mb-40">
-        <h3 class="title-md mb-20"><i class="fa-solid fa-clock-rotate-left text-danger"></i> Entradas Pendientes de Pago</h3>
+        <h3 class="title-md mb-20"><i class="fa-solid fa-clock-rotate-left text-danger"></i> Entradas pendientes de pago</h3>
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Código Ticket</th>
+                    <th>Código ticket</th>
                     <th>Usuario</th>
                     <th>Evento</th>
                     <th>Método</th>
@@ -98,7 +98,7 @@ require_once '../includes/header.php';
         </div>
 
         <div class="flex-col container-box w-100">
-            <h3 class="title-md"><i class="fa-solid fa-book"></i> Todas las Clases</h3>
+            <h3 class="title-md"><i class="fa-solid fa-book"></i> Todas las clases</h3>
             <table class="admin-table">
                 <thead>
                     <tr>
