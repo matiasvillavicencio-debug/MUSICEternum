@@ -21,7 +21,7 @@ body {
     color: var(--blanco);
 }
 
-.body-padding { padding-top: 100px; }
+.body-padding { padding-top: 0; }
 
 .nav-logo { max-height: 40px; width: auto; object-fit: contain; transition: transform 0.3s ease; display: block; }
 
@@ -30,12 +30,14 @@ body {
 .hero-logo { max-height: 120px; width: auto; object-fit: contain; margin-bottom: 15px; filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.3)); }
 
 .navbar {
-    position: fixed; top: 0; left: 0; right: 0;
-    background: rgba(40, 34, 98, 0.95);
-    backdrop-filter: blur(10px);
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 20px 50px; z-index: 100;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: static;
+    background: var(--azul-profundo);
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 20px 50px; 
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .nav-brand { font-family: 'Oswald', sans-serif; font-size: 24px; color: var(--blanco); }
@@ -217,9 +219,7 @@ body {
 
 .btn-outline:hover { border-color: var(--azul-profundo); background: var(--blanco-rosaceo); }
 
-.btn-primary-action { background: var(--verde-confirmar); color: var(--azul-profundo); border: none; padding: 15px; border-radius: 12px; font-family: 'Oswald', sans-serif; font-size: 18px; text-transform: uppercase; cursor: pointer; text-align: center; text-decoration: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3); }
-
-.btn-primary-action:hover { background: #00DB58; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 230, 118, 0.4); }
+.btn-primary-action { color: var(--azul-profundo); border: none; padding: 15px; border-radius: 12px; font-family: 'Oswald', sans-serif; font-size: 18px; text-transform: uppercase; cursor: pointer; text-align: center; text-decoration: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3); }
 
 .mb-0 { margin-bottom: 0; }
 
@@ -732,7 +732,13 @@ body {
 
 .badge-aprobado { background: var(--verde-confirmar); color: var(--blanco); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
 
-.nosotros-hero { text-align: center; padding: 80px 20px; background: linear-gradient(135deg, rgba(40,34,98,0.9), rgba(217,4,43,0.8)), url('../image/image.jpg') center/cover; border-radius: 20px; margin-bottom: 50px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+.nosotros-hero { 
+    text-align: center; 
+    padding: 100px 20px; 
+    background: linear-gradient(135deg, rgba(40,34,98,0.9), rgba(217,4,43,0.8)), url('../image/image.jpg') center/cover; 
+    margin-bottom: 50px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+}
 
 .nosotros-hero h1 { font-family: 'Oswald', sans-serif; font-size: 55px; color: var(--blanco); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
 
