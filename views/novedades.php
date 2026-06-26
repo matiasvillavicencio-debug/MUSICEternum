@@ -12,18 +12,20 @@ require_once '../includes/header.php';
 <div class="max-w-1200 mx-auto w-100 mb-50">
     <div class="novedades-grid">
 
-        <article class="novedades-card">
-            <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Novedad" class="novedades-img">
+<article class="novedades-card">
+        <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Novedad" class="novedades-img">
             <div class="novedades-body">
                 <div class="novedades-meta">
                     <span><i class="fa-solid fa-book"></i> Academia</span>
-                    <span>02 de Noviembre</span>
-                </div>
-                <h2 class="novedades-title">Nuevos cursos de producción</h2>
-                <p class="novedades-text">a</p>
-                <a href="cartelera.php" class="btn-outline text-center text-decoration-none">Ver cursos</a>
-            </div>
-        </article>
+                        <span>02 de Noviembre</span>
+        </div>
+        <h2 class="novedades-title">Nuevos cursos de producción</h2>
+        <p class="novedades-text">
+            Descubrí nuestros nuevos cursos de producción musical diseñados para todos los niveles. Aprendé a utilizar herramientas profesionales, desarrollar tu propio estilo y crear producciones de alta calidad junto a docentes especializados. Comenzá tu camino en la música con Eternum Music.
+        </p>
+        <a href="cartelera.php" class="btn-outline btn-novedades text-center text-decoration-none">Ver cursos</a>
+    </div>
+</article>
 
         <article class="novedades-card">
             <img src="https://images.unsplash.com/photo-1526478806334-5fd488fcaabc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Novedad" class="novedades-img">
@@ -34,7 +36,7 @@ require_once '../includes/header.php';
                 </div>
                 <h2 class="novedades-title">Sistema de reseñas oficial activado</h2>
                 <p class="novedades-text">¡Tu voz importa más que nunca! Ahora todos los espectadores pueden dejar reseñas, calificaciones y fotografías luego de asistir a un evento para apoyar a sus artistas favoritos directamente.</p>
-                <a href="login.php" class="btn-outline text-center text-decoration-none">Ingresa a tu cuenta</a>
+                <a href="login.php" class="btn-outline btn-novedades text-center text-decoration-none">Ingresá a tu cuenta</a>
             </div>
         </article>
 
