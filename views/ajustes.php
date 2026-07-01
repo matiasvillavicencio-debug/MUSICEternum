@@ -78,33 +78,35 @@ require_once '../includes/header.php';
 <div class="dash-wrapper">
     <aside class="dash-sidebar">
         <div class="dash-sidebar-user text-center">
-            <img src="<?= htmlspecialchars($avatar_actual) ?>" alt="Avatar" class="avatar-md mb-10">
+            <img src="<?= htmlspecialchars($avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($_SESSION['username']) . '&background=00B4D8&color=fff&bold=true') ?>" alt="Avatar" class="avatar-md mb-10">
             <h3 class="title-md text-blanco"><?= htmlspecialchars($_SESSION['username']) ?></h3>
             <p class="text-celeste-sm"><?= strtoupper($rol) ?></p>
         </div>
         
         <nav class="dash-nav">
-            <a href="dashboard.php" class="dash-nav-item"><i class="fa-solid fa-table-columns"></i> Panel Principal</a>
+            <a href="dashboard.php" class="dash-nav-item active"><i class="fa-solid fa-table-columns"></i> Panel Principal</a>
             
             <?php if ($rol === 'profesor'): ?>
-                <a href="crear_clase.php" class="dash-nav-item text-success-bold"><i class="fa-solid fa-plus"></i> Crear Nueva Clase</a>
-                <a href="mis_alumnos.php" class="dash-nav-item"><i class="fa-solid fa-users"></i> Mis Alumnos</a>
-                <a href="subir_material.php" class="dash-nav-item"><i class="fa-solid fa-file-arrow-up"></i> Subir Material</a>
+                <a href="dar_clase.php" class="dash-nav-item text-danger"><i class="fa-solid fa-video"></i> Dar clase en vivo</a>
+                <a href="mis_alumnos.php" class="dash-nav-item"><i class="fa-solid fa-users"></i> Mis alumnos</a>
+                <a href="subir_material.php" class="dash-nav-item"><i class="fa-solid fa-file-arrow-up"></i> Subir material</a>
+                <a href="mensajes.php" class="dash-nav-item"><i class="fa-solid fa-envelope"></i> Mensajes <?php if($mensajes_sin_leer > 0): ?><span class="badge-noti"><?= $mensajes_sin_leer ?></span><?php endif; ?></a>
+                <a href="estadisticas.php" class="dash-nav-item"><i class="fa-solid fa-chart-line"></i> Estadísticas e ingresos</a>
             <?php elseif ($rol === 'alumno'): ?>
-                <a href="mis_cursos.php" class="dash-nav-item"><i class="fa-solid fa-book"></i> Mis Cursos</a>
+                <a href="mis_cursos.php" class="dash-nav-item"><i class="fa-solid fa-book"></i> Mis cursos</a>
                 <a href="calificaciones.php" class="dash-nav-item"><i class="fa-solid fa-star"></i> Calificaciones</a>
-                <a href="material_estudio.php" class="dash-nav-item"><i class="fa-solid fa-folder-open"></i> Material de Estudio</a>
+                <a href="material_estudio.php" class="dash-nav-item"><i class="fa-solid fa-folder-open"></i> Material de estudio</a>
             <?php elseif ($rol === 'espectador'): ?>
-                <a href="mis_entradas.php" class="dash-nav-item"><i class="fa-solid fa-ticket"></i> Mis Entradas</a>
+                <a href="mis_entradas.php" class="dash-nav-item"><i class="fa-solid fa-ticket"></i> Mis entradas</a>
             <?php endif; ?>
             
-            <a href="ajustes.php" class="dash-nav-item active"><i class="fa-solid fa-gear"></i> Configuración</a>
+            <a href="ajustes.php" class="dash-nav-item"><i class="fa-solid fa-gear"></i> Configuración</a>
         </nav>
     </aside>
 
     <main class="dash-main">
         <div class="flex-between mb-20">
-            <h2 class="title-lg mb-0"><i class="fa-solid fa-gear text-danger"></i> Ajustes de Cuenta</h2>
+            <h2 class="title-lg mb-0"><i class="fa-solid fa-gear text-danger"></i> Ajustes</h2>
         </div>
         
         <?php if ($mensaje): ?>
@@ -115,18 +117,18 @@ require_once '../includes/header.php';
 
         <div class="flex-container-50-50 bg-transparent">
             <div class="flex-col container-box">
-                <h3 class="title-md mb-20 text-center">Foto de Perfil</h3>
+                <h3 class="title-md mb-20 text-center">Foto de perfil</h3>
                 <div class="avatar-upload-container">
                     <img src="<?= htmlspecialchars($avatar_actual) ?>" alt="Tu Avatar" class="avatar-preview">
                     
                     <form method="POST" action="" enctype="multipart/form-data" class="w-100 text-center">
                         <input type="file" name="avatar_file" class="input-light mb-10" accept="image/png, image/jpeg" required>
-                        <button type="submit" name="subir_avatar" class="btn-confirm-bright-green w-100"><i class="fa-solid fa-upload"></i> Subir Nueva Foto</button>
+                        <button type="submit" name="subir_avatar" class="btn-confirm-bright-green w-100"><i class="fa-solid fa-upload"></i> Subir nueva foto</button>
                     </form>
 
                     <?php if ($usuarioData['avatar']): ?>
                     <form method="POST" action="" class="w-100 mt-10">
-                        <button type="submit" name="eliminar_avatar" class="btn-outline w-100 text-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar tu foto de perfil actual?');"><i class="fa-solid fa-trash"></i> Eliminar Foto</button>
+                        <button type="submit" name="eliminar_avatar" class="btn-outline w-100 text-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar tu foto de perfil actual?');"><i class="fa-solid fa-trash"></i> Eliminar foto</button>
                     </form>
                     <?php endif; ?>
                 </div>
@@ -136,18 +138,18 @@ require_once '../includes/header.php';
                 <h3 class="title-md mb-20">Datos Personales</h3>
                 <form method="POST" action="">
                     <div class="form-group mb-20">
-                        <label>Nombre de Usuario Público</label>
+                        <label>Nombre de usuario</label>
                         <input type="text" name="username" class="input-light" value="<?= htmlspecialchars($usuarioData['username']) ?>" required>
                     </div>
                     <div class="form-group mb-20">
-                        <label>Correo Electrónico de Contacto</label>
+                        <label>Correo electrónico</label>
                         <input type="email" name="email" class="input-light" value="<?= htmlspecialchars($usuarioData['email']) ?>" required>
                     </div>
                     <div class="form-group mb-20">
-                        <label>Nivel de Autorización (Inmodificable)</label>
+                        <label>Rol (No modificable)</label>
                         <input type="text" class="input-light text-muted" value="<?= strtoupper($usuarioData['role']) ?>" readonly>
                     </div>
-                    <button type="submit" name="actualizar_datos" class="btn-action-orange w-100 mt-15"><i class="fa-solid fa-floppy-disk"></i> Guardar Cambios</button>
+                    <button type="submit" name="actualizar_datos" class="btn-action-orange w-100 mt-15"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button>
                 </form>
             </div>
         </div>

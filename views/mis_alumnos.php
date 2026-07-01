@@ -18,7 +18,7 @@ require_once '../includes/header.php';
 
 <section class="container-box-lg mt-30 mb-50">
     <div class="flex-between mb-20">
-        <h2 class="title-lg"><i class="fa-solid fa-users text-danger"></i> Mis Alumnos Activos</h2>
+        <h2 class="title-lg"><i class="fa-solid fa-users text-danger"></i> Mis Alumnos</h2>
         <a href="dashboard.php" class="text-muted"><i class="fa-solid fa-arrow-left"></i> Volver</a>
     </div>
     
@@ -29,7 +29,6 @@ require_once '../includes/header.php';
                     <th>Alumno</th>
                     <th>Curso Inscrito</th>
                     <th>Fecha de Ingreso</th>
-                    <th>Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,11 +42,6 @@ require_once '../includes/header.php';
                     </td>
                     <td><?= htmlspecialchars($alumno['clase_titulo']) ?></td>
                     <td><?= date('d/m/Y', strtotime($alumno['fecha_inscripcion'])) ?></td>
-                    <td>
-                        <a href="contacto_profesor.php?id_clase=<?= $alumno['id_clase'] ?>&id_alumno=<?= $alumno['id_alumno'] ?>" class="btn-action-orange p-15 text-decoration-none" style="display: inline-block;">
-                            <i class="fa-solid fa-comments"></i> Chat / Ofertar
-                        </a>
-                    </td>
                 </tr>
                 <?php endforeach; ?>
                 

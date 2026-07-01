@@ -45,7 +45,7 @@ require_once '../includes/header.php';
                 <a href="mis_alumnos.php" class="dash-nav-item"><i class="fa-solid fa-users"></i> Mis alumnos</a>
                 <a href="subir_material.php" class="dash-nav-item"><i class="fa-solid fa-file-arrow-up"></i> Subir material</a>
                 <a href="mensajes.php" class="dash-nav-item"><i class="fa-solid fa-envelope"></i> Bandeja de entrada</a>
-                <a href="estadisticas.php" class="dash-nav-item active"><i class="fa-solid fa-chart-line"></i> Estadísticas</a>
+                <a href="estadisticas.php" class="dash-nav-item active"><i class="fa-solid fa-chart-line"></i> Estadísticas e ingresos</a>
                 <a href="ajustes.php" class="dash-nav-item"><i class="fa-solid fa-gear"></i> Configuración</a>
             </nav>
         </aside>

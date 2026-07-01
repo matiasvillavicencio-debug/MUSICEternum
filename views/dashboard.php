@@ -76,7 +76,7 @@ require_once '../includes/header.php';
     <main class="dash-main">
         <?php if ($rol === 'profesor'): ?>
             <div class="flex-between mb-20">
-                <h2 class="title-lg mb-0"><i class="fa-solid fa-chalkboard-user text-danger"></i> Gestión de academia</h2>
+                <h2 class="title-lg mb-0"><i class="fa-solid fa-chalkboard-user text-danger"></i> Resumen</h2>
                 <div class="flex-gap-15">
                     <a href="crear_clase.php" class="btn-confirm-bright-green"><i class="fa-solid fa-plus"></i> Publicar curso</a>
                 </div>

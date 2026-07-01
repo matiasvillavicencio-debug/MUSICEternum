@@ -39,14 +39,14 @@ require_once '../includes/header.php';
             <a href="crear_clase.php" class="dash-nav-item text-success-bold"><i class="fa-solid fa-plus"></i> Crear Nueva Clase</a>
             <a href="mis_alumnos.php" class="dash-nav-item"><i class="fa-solid fa-users"></i> Mis Alumnos</a>
             <a href="subir_material.php" class="dash-nav-item"><i class="fa-solid fa-file-arrow-up"></i> Subir Material</a>
-            <a href="mensajes.php" class="dash-nav-item active"><i class="fa-solid fa-envelope"></i> Bandeja de Entrada</a>
-            <a href="estadisticas.php" class="dash-nav-item"><i class="fa-solid fa-chart-line"></i> Estadísticas</a>
+            <a href="mensajes.php" class="dash-nav-item active"><i class="fa-solid fa-envelope"></i> Bandeja de entrada</a>
+            <a href="estadisticas.php" class="dash-nav-item"><i class="fa-solid fa-chart-line"></i> Estadísticas e ingresos</a>
             <a href="ajustes.php" class="dash-nav-item"><i class="fa-solid fa-gear"></i> Configuración</a>
         </nav>
     </aside>
     <main class="dash-main">
         <div class="flex-between mb-20">
-            <h2 class="title-lg mb-0"><i class="fa-solid fa-envelope text-danger"></i> Mensajes Recientes</h2>
+            <h2 class="title-lg mb-0"><i class="fa-solid fa-envelope text-danger"></i> Mensajes recientes</h2>
         </div>
         
         <div class="container-box w-100 bg-transparent">
